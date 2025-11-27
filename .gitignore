@@ -1,0 +1,9 @@
+/.metadata/
+*.db
+*.sqlite
+*.sqlite3
+.idea/
+*.iml
+bin/
+target/
+.vscode/
