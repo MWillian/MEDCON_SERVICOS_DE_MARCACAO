@@ -8,7 +8,7 @@ public class PostoSaude {
     
 
     public PostoSaude() {}
-    public PostoSaude(int id, String nome, String endereco,String descricao, String telefone) {
+    public PostoSaude(int id, String nome, String endereco, String telefone) {
         this.id = id;
         this.nome = nome;
         this.endereco = endereco;

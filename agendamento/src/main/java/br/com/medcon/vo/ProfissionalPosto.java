@@ -1,17 +1,17 @@
 package br.com.medcon.vo;
 
 public class ProfissionalPosto {
-    private Long id; 
+    private int id; 
     private ProfissionalSaude profissional; 
     private PostoSaude posto; 
     public ProfissionalPosto() {}
-    public ProfissionalPosto(Long id, ProfissionalSaude profissional, PostoSaude posto) {
+    public ProfissionalPosto(int id, ProfissionalSaude profissional, PostoSaude posto) {
         this.id = id;
         this.profissional = profissional;
         this.posto = posto;
     }
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
     public ProfissionalSaude getProfissional() { return profissional; }
     public void setProfissional(ProfissionalSaude profissional) { this.profissional = profissional; }
     public PostoSaude getPosto() { return posto; }

@@ -6,7 +6,7 @@ import br.com.medcon.enums.StatusAgendamento;
 
 public class Agendamento {
     
-    private Long id;
+    private int id;
     private Solicitacao solicitacao; 
     private ProfissionalSaude profissional;
     private PostoSaude posto; 
@@ -16,7 +16,7 @@ public class Agendamento {
     private String laudo;
 
     public Agendamento() {}
-    public Agendamento(Long id, Solicitacao solicitacao, ProfissionalSaude profissional, 
+    public Agendamento(int id, Solicitacao solicitacao, ProfissionalSaude profissional, 
                        PostoSaude posto, LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim, 
                        StatusAgendamento status, String laudo) {
         this.id = id;
@@ -29,8 +29,8 @@ public class Agendamento {
         this.laudo = laudo;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
     public Solicitacao getSolicitacao() { return solicitacao; }
     public void setSolicitacao(Solicitacao solicitacao) { this.solicitacao = solicitacao; }
     public ProfissionalSaude getProfissional() { return profissional; }

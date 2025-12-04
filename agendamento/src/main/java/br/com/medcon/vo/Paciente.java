@@ -6,6 +6,9 @@ import java.util.List;
 public class Paciente extends Pessoa {
     private String cartaoSus; 
     private List<String> historicoMedico = new ArrayList<>(); 
+    public Paciente(){
+        super();
+    }
     public Paciente(String cartaosus) {
         super();
         this.cartaoSus = cartaosus; 

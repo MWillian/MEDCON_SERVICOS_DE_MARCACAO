@@ -31,7 +31,7 @@ public class EspecialidadeDAO implements IDAO<Especialidade>{
                 stmt.setString(1,especialidade.getNome());
                 stmt.setString(2,especialidade.getDescricao());
                 stmt.setInt(3,especialidade.getId());
-                stmt.execute();
+                stmt.executeUpdate();
             }
     }
     @Override

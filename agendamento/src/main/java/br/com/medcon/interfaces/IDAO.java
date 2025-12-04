@@ -3,7 +3,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface IDAO<T> {
-    //vamos criar uma interface para todos as classes DAO
     void salvar(T objeto) throws SQLException;
     void atualizar(T objeto) throws SQLException;
     void deletar(int id) throws SQLException;
