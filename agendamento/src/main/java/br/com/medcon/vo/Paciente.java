@@ -19,8 +19,10 @@ public class Paciente extends Pessoa {
     }
     public String getCartaoSus() { return cartaoSus; }
     public void setCartaoSus(String cartaoSus) { this.cartaoSus = cartaoSus; }
+
     public List<String> getHistoricoMedico() { return historicoMedico; }
     public void setHistoricoMedico(List<String> historicoMedico) { this.historicoMedico = historicoMedico; }
+    
     public void adicionarHistorico(String registro) {
     this.historicoMedico.add(registro);
     }

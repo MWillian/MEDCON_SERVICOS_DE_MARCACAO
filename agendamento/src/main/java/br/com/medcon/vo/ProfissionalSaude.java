@@ -7,6 +7,7 @@ public class ProfissionalSaude extends Pessoa {
     private String registroProfissional;
     private CargoProfissional tipo; 
     private Especialidade especialidade;
+    
     public ProfissionalSaude() {
         super();
     }
@@ -20,8 +21,10 @@ public class ProfissionalSaude extends Pessoa {
     }
     public String getRegistroProfissional() { return registroProfissional; }
     public void setRegistroProfissional(String registroProfissional) { this.registroProfissional = registroProfissional; }
+
     public CargoProfissional getTipo() { return tipo; }
     public void setTipo(CargoProfissional tipo) { this.tipo = tipo; }
+    
     public Especialidade getEspecialidade() { return especialidade; }
     public void setEspecialidade(Especialidade especialidade) { this.especialidade = especialidade; }
 }

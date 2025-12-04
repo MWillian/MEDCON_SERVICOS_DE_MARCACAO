@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConexaoSQLite implements IConexao {
-    private static final String URL_CONEXAO = "jdbc:sqlite:C:\\Users\\mathe\\source\\repos\\dev\\MEDCON---CONSULTAS-MEDICAS\\clinica.db"; // cole aqui o caminho de onde está o arquivo do banco.
+    private static final String URL_CONEXAO = "jdbc:sqlite:C:\\Users\\Calebe\\Desktop\\Atividade_POO\\clinica.db"; // cole aqui o caminho de onde está o arquivo do banco.
     private static final String DRIVER = "org.sqlite.JDBC";
     @Override
     public Connection getConnection() throws SQLException {

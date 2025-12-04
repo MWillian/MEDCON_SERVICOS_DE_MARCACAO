@@ -14,6 +14,7 @@ public class ProfissionalPosto {
     public void setId(int id) { this.id = id; }
     public ProfissionalSaude getProfissional() { return profissional; }
     public void setProfissional(ProfissionalSaude profissional) { this.profissional = profissional; }
+
     public PostoSaude getPosto() { return posto; }
     public void setPosto(PostoSaude posto) { this.posto = posto; }
 }
