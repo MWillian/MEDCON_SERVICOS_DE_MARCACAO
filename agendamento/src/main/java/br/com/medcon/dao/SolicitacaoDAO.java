@@ -181,7 +181,7 @@ public class SolicitacaoDAO implements ISolicitacaoDAO {
         paciente.setDataNascimento(LocalDate.parse(rs.getString("data_nascimento"), formato));
         paciente.setTelefone(rs.getString("telefone"));
         paciente.setEndereco(rs.getString("endereco"));
-
+        
         return paciente;
     }
 
