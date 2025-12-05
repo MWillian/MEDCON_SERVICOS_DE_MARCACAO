@@ -34,12 +34,12 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
     @Override
     public void salvar(Disponibilidade disponibilidade) throws SQLException {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
-        String sql = "INSERTO INTO tb_disponibilidade (id_profissional, id_posto, dia_semana, hora_inicio, hora_fim) VALUES (?, ?, ?, ?, ?);";
+        String sql = "INSERT INTO tb_disponibilidade (id_profissional, id_posto, dia_semana, hora_inicio, hora_fim) VALUES (?, ?, ?, ?, ?);";
         try (Connection conn = factory.getConexao();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, disponibilidade.getProfissional().getId());
             stmt.setInt(2, disponibilidade.getPosto().getId());
-            stmt.setString(3, disponibilidade.getDiaSemana().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR")));
+            stmt.setString(3, disponibilidade.getDiaSemana().toString());
             stmt.setString(4, disponibilidade.getHoraInicio().format(formato));
             stmt.setString(5, disponibilidade.getHoraFim().format(formato));
             stmt.execute();
@@ -73,19 +73,19 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
     }
 
     @Override
-    public Disponibilidade duscarPorId(int id) throws SQLException {
+    public Disponibilidade buscarPorId(int id) throws SQLException {
         Disponibilidade disponibilidade = null;
         String sql = "SELECT tb_disponibilidade.*, tb_profissional. *, tb_pessoa.*, tb_especialidade.*, tb_posto.* "
                 + "FROM tb_disponibilidade "
 
                 + "INNER JOIN tb_profissional "
-                + "ON tb_disponibilidade.id = tb_profissional.id_pessoa "
+                + "ON tb_disponibilidade.id_profissional = tb_profissional.id_pessoa "
 
                 + "INNER JOIN tb_pessoa "
                 + "ON tb_profissional.id_pessoa = tb_pessoa.id "
 
                 + "INNER JOIN tb_especialidade "
-                + "ON tb_profissional.id_especialidade = tb_especialidade.id"
+                + "ON tb_profissional.id_especialidade = tb_especialidade.id "
 
                 + "INNER JOIN tb_posto "
                 + "ON tb_disponibilidade.id_posto = tb_posto.id "
@@ -110,13 +110,13 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
                 + "FROM tb_disponibilidade "
 
                 + "INNER JOIN tb_profissional "
-                + "ON tb_disponibilidade.id = tb_profissional.id_pessoa "
+                + "ON tb_disponibilidade.id_profissional = tb_profissional.id_pessoa "
 
                 + "INNER JOIN tb_pessoa "
                 + "ON tb_profissional.id_pessoa = tb_pessoa.id "
 
                 + "INNER JOIN tb_especialidade "
-                + "ON tb_profissional.id_especialidade = tb_especialidade.id"
+                + "ON tb_profissional.id_especialidade = tb_especialidade.id "
 
                 + "INNER JOIN tb_posto "
                 + "ON tb_disponibilidade.id_posto = tb_posto.id;";
@@ -149,7 +149,7 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
         disponibilidade.setProfissional(montarProfissional(rs));
         disponibilidade.setPosto(montarPostoSaude(rs));
         disponibilidade.setDiaSemana(DayOfWeek.valueOf(rs.getString("dia_semana")));
-        disponibilidade.setHoraInicio(LocalTime.parse(rs.getString("hora_incio"), formato));
+        disponibilidade.setHoraInicio(LocalTime.parse(rs.getString("hora_inicio"), formato));
         disponibilidade.setHoraFim(LocalTime.parse(rs.getString("hora_fim"), formato));
         return disponibilidade;
     }

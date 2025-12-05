@@ -12,7 +12,7 @@ public interface IDisponibilidadeDAO {
 
     void deletar(int id) throws SQLException;
 
-    Disponibilidade duscarPorId(int id) throws SQLException;
+    Disponibilidade buscarPorId(int id) throws SQLException;
 
     List<Disponibilidade>buscarTodos() throws SQLException;
 

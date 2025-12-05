@@ -31,4 +31,12 @@ public class Disponibilidade {
     public void setHoraInicio(LocalTime horaInicio) { this.horaInicio = horaInicio; }
     public LocalTime getHoraFim() { return horaFim; }
     public void setHoraFim(LocalTime horaFim) { this.horaFim = horaFim; }
+    @Override
+    public String toString() {
+        return "Disponibilidade [id=" + id + ", profissional=" + profissional + ", posto=" + posto + ", diaSemana="
+                + diaSemana + ", horaInicio=" + horaInicio + ", horaFim=" + horaFim + ", getId()=" + getId()
+                + ", getProfissional()=" + getProfissional() + ", getPosto()=" + getPosto() + ", getDiaSemana()="
+                + getDiaSemana() + ", getHoraInicio()=" + getHoraInicio() + ", getHoraFim()=" + getHoraFim() + "]";
+    }
+    
 }
