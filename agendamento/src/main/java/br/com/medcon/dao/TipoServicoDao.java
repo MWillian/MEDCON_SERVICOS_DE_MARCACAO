@@ -11,10 +11,10 @@ import br.com.medcon.interfaces.ITipoServicoDAO;
 import br.com.medcon.vo.Especialidade;
 import br.com.medcon.vo.TipoServico;
 
-public class TipoServicoDao implements ITipoServicoDAO {
+public class TipoServicoDAO implements ITipoServicoDAO {
     private final ConexaoFactory factory;
 
-    public TipoServicoDao() {
+    public TipoServicoDAO() {
         this.factory = new ConexaoFactory();
     }
 

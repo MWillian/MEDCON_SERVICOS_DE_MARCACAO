@@ -1,15 +1,12 @@
 package br.com.medcon.vo;
 
 import java.time.LocalDate;
-
 public class HistoricoMedico {
-    
     private int id;
     private Paciente paciente; 
     private LocalDate dataRegistro;
     private String tipoEvento; 
     private String detalhes; 
-
     public HistoricoMedico() {}
     public HistoricoMedico(int id, Paciente paciente, LocalDate dataRegistro, 
                            String tipoEvento, String detalhes) {
@@ -19,7 +16,6 @@ public class HistoricoMedico {
         this.tipoEvento = tipoEvento;
         this.detalhes = detalhes;
     }
-
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public Paciente getPaciente() { return paciente; }
