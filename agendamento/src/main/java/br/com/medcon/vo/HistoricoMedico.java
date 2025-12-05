@@ -7,14 +7,16 @@ public class HistoricoMedico {
     private LocalDate dataRegistro;
     private String tipoEvento; 
     private String detalhes; 
+    private String observacoes;
     public HistoricoMedico() {}
     public HistoricoMedico(int id, Paciente paciente, LocalDate dataRegistro, 
-                           String tipoEvento, String detalhes) {
+                           String tipoEvento, String detalhes, String observacoes) {
         this.id = id;
         this.paciente = paciente;
         this.dataRegistro = dataRegistro;
         this.tipoEvento = tipoEvento;
         this.detalhes = detalhes;
+        this.observacoes = observacoes;
     }
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -26,4 +28,6 @@ public class HistoricoMedico {
     public void setTipoEvento(String tipoEvento) { this.tipoEvento = tipoEvento; }
     public String getDetalhes() { return detalhes; }
     public void setDetalhes(String detalhes) { this.detalhes = detalhes; }
+    public String getObservacoes() { return observacoes; }
+    public void setObservacoes(String observacoes) { this.observacoes = observacoes; }
 }
