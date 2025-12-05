@@ -1,7 +1,6 @@
 package br.com.medcon.vo;
 import java.time.LocalDate;
 
-
 public class Pessoa {
     private int id;
     private String nome;
@@ -9,7 +8,6 @@ public class Pessoa {
     private LocalDate dataNascimento;
     private String telefone; 
     private String endereco;
-
     public Pessoa() {} 
     public Pessoa(int id,String nome, String cpf,LocalDate dataNascimento,String telefone, String endereco){
         this.id = id;

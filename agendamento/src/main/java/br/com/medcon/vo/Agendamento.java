@@ -1,9 +1,6 @@
 package br.com.medcon.vo;
-
 import java.time.LocalDateTime;
-
 import br.com.medcon.enums.StatusAgendamento;
-
 public class Agendamento {
     
     private int id;
