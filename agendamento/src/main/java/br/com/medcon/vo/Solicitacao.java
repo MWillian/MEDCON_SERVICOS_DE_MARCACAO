@@ -8,6 +8,7 @@ public class Solicitacao {
     private Paciente paciente;
     private TipoServico tipoServico; 
     private LocalDateTime dataSolicitacao;
+    private PostoSaude postoPreferencia;
     private Prioridade prioridade;
     private StatusSolicitacao status;
     public Solicitacao() {}
@@ -23,14 +24,22 @@ public class Solicitacao {
     }
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
+
     public Paciente getPaciente() { return paciente; }
     public void setPaciente(Paciente paciente) { this.paciente = paciente; }
+
     public TipoServico getTipoServico() { return tipoServico; }
     public void setTipoServico(TipoServico tipoServico) { this.tipoServico = tipoServico; }
+
     public LocalDateTime getDataSolicitacao() { return dataSolicitacao; }
     public void setDataSolicitacao(LocalDateTime dataSolicitacao) { this.dataSolicitacao = dataSolicitacao; }
+
+    public PostoSaude getPostoPreferencia() {return postoPreferencia;}
+    public void setPostoPreferencia(PostoSaude postoPreferencia) {this.postoPreferencia = postoPreferencia; }
+
     public Prioridade getPrioridade() { return prioridade; }
     public void setPrioridade(Prioridade prioridade) { this.prioridade = prioridade; }
+
     public StatusSolicitacao getStatus() { return status; }
     public void setStatus(StatusSolicitacao status) { this.status = status; }
 }

@@ -75,22 +75,55 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
     @Override
     public Disponibilidade buscarPorId(int id) throws SQLException {
         Disponibilidade disponibilidade = null;
-        String sql = "SELECT tb_disponibilidade.*, tb_profissional. *, tb_pessoa.*, tb_especialidade.*, tb_posto.* "
-                + "FROM tb_disponibilidade "
+        String sql = "SELECT " +
+                // tb_disponibilidade
+                "d.id AS disp_id, " +
+                "d.id_profissional AS disp_id_profissional, " +
+                "d.id_posto AS disp_id_posto, " +
+                "d.dia_semana AS disp_dia_semana, " +
+                "d.hora_inicio AS disp_hora_inicio, " +
+                "d.hora_fim AS disp_hora_fim, " +
 
-                + "INNER JOIN tb_profissional "
-                + "ON tb_disponibilidade.id_profissional = tb_profissional.id_pessoa "
+                // tb_profissional
+                "prof.id_pessoa AS prof_id_pessoa, " +
+                "prof.id_especialidade AS prof_id_especialidade, " +
+                "prof.registro_profissional AS prof_registro_profissional, " +
+                "prof.tipo_profissional AS prof_tipo_profissional, " +
+                
 
-                + "INNER JOIN tb_pessoa "
-                + "ON tb_profissional.id_pessoa = tb_pessoa.id "
+                // tb_pessoa
+                "pes.id AS pes_id, " +
+                "pes.nome AS pes_nome, " +
+                "pes.cpf AS pes_cpf, " +
+                "pes.data_nascimento AS pes_data_nascimento, " +
+                "pes.endereco AS pes_endereco, " +
+                "pes.telefone AS pes_telefone, " +
 
-                + "INNER JOIN tb_especialidade "
-                + "ON tb_profissional.id_especialidade = tb_especialidade.id "
+                // tb_especialidade
+                "esp.id AS esp_id, " +
+                "esp.nome AS esp_nome, " +
 
-                + "INNER JOIN tb_posto "
-                + "ON tb_disponibilidade.id_posto = tb_posto.id "
+                // tb_posto
+                "po.id AS posto_id, " +
+                "po.nome AS posto_nome, " +
+                "po.endereco AS posto_endereco, " +
+                "po.telefone AS posto_telefone " +
 
-                + "WHERE tb_disponibilidade.id = ?;";
+                "FROM tb_disponibilidade d " +
+
+                "INNER JOIN tb_profissional prof " +
+                "ON d.id_profissional = prof.id_pessoa " +
+
+                "INNER JOIN tb_pessoa pes " +
+                "ON prof.id_pessoa = pes.id " +
+
+                "INNER JOIN tb_especialidade esp " +
+                "ON prof.id_especialidade = esp.id " +
+
+                "INNER JOIN tb_posto po " +
+                "ON d.id_posto = po.id " +
+
+                "WHERE d.id = ?;";
         try (Connection conn = factory.getConexao();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -106,20 +139,53 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
     @Override
     public List<Disponibilidade> buscarTodos() throws SQLException {
         List<Disponibilidade> lista = new ArrayList<>();
-        String sql = "SELECT tb_disponibilidade.*, tb_profissional. *, tb_pessoa.*, tb_especialidade.*, tb_posto.* "
-                + "FROM tb_disponibilidade "
+        String sql = "SELECT " +
+                // tb_disponibilidade
+                "d.id AS disp_id, " +
+                "d.id_profissional AS disp_id_profissional, " +
+                "d.id_posto AS disp_id_posto, " +
+                "d.dia_semana AS disp_dia_semana, " +
+                "d.hora_inicio AS disp_hora_inicio, " +
+                "d.hora_fim AS disp_hora_fim, " +
 
-                + "INNER JOIN tb_profissional "
-                + "ON tb_disponibilidade.id_profissional = tb_profissional.id_pessoa "
+                // tb_profissional
+                "prof.id_pessoa AS prof_id_pessoa, " +
+                "prof.id_especialidade AS prof_id_especialidade, " +
+                "prof.registro_profissional AS prof_registro_profissional, " +
+                "prof.tipo_profissional AS prof_tipo_profissional, " +
 
-                + "INNER JOIN tb_pessoa "
-                + "ON tb_profissional.id_pessoa = tb_pessoa.id "
+                // tb_pessoa
+                "pes.id AS pes_id, " +
+                "pes.nome AS pes_nome, " +
+                "pes.cpf AS pes_cpf, " +
+                "pes.data_nascimento AS pes_data_nascimento, " +
+                "pes.endereco AS pes_endereco, " +
+                "pes.telefone AS pes_telefone, " +
 
-                + "INNER JOIN tb_especialidade "
-                + "ON tb_profissional.id_especialidade = tb_especialidade.id "
+                // tb_especialidade
+                "esp.id AS esp_id, " +
+                "esp.nome AS esp_nome, " +
+                "esp.descricao AS esp_descricao, " +
+                
+                // tb_posto
+                "po.id AS posto_id, " +
+                "po.nome AS posto_nome, " +
+                "po.endereco AS posto_endereco, " +
+                "po.telefone AS posto_telefone " +
 
-                + "INNER JOIN tb_posto "
-                + "ON tb_disponibilidade.id_posto = tb_posto.id;";
+                "FROM tb_disponibilidade d " +
+
+                "INNER JOIN tb_profissional prof " +
+                "ON d.id_profissional = prof.id_pessoa " +
+
+                "INNER JOIN tb_pessoa pes " +
+                "ON prof.id_pessoa = pes.id " +
+
+                "INNER JOIN tb_especialidade esp " +
+                "ON prof.id_especialidade = esp.id " +
+
+                "INNER JOIN tb_posto po " +
+                "ON d.id_posto = po.id;";
         try (Connection conn = factory.getConexao();
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet result = stmt.executeQuery()) {
@@ -145,12 +211,14 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
     private Disponibilidade monstarDisponibilidade(ResultSet rs) throws SQLException {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
         Disponibilidade disponibilidade = new Disponibilidade();
-        disponibilidade.setId(rs.getInt("id"));
+
+        disponibilidade.setId(rs.getInt("disp_id"));
         disponibilidade.setProfissional(montarProfissional(rs));
         disponibilidade.setPosto(montarPostoSaude(rs));
-        disponibilidade.setDiaSemana(DayOfWeek.valueOf(rs.getString("dia_semana")));
-        disponibilidade.setHoraInicio(LocalTime.parse(rs.getString("hora_inicio"), formato));
-        disponibilidade.setHoraFim(LocalTime.parse(rs.getString("hora_fim"), formato));
+        disponibilidade.setDiaSemana(DayOfWeek.valueOf(rs.getString("disp_dia_semana")));
+        disponibilidade.setHoraInicio(LocalTime.parse(rs.getString("disp_hora_inicio"), formato));
+        disponibilidade.setHoraFim(LocalTime.parse(rs.getString("disp_hora_fim"), formato));
+
         return disponibilidade;
     }
 
@@ -158,14 +226,14 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         ProfissionalSaude ps = new ProfissionalSaude();
 
-        ps.setId(rs.getInt("id_pessoa"));
-        ps.setNome(rs.getString("nome"));
-        ps.setCpf(rs.getString("cpf"));
-        ps.setDataNascimento(LocalDate.parse(rs.getString("data_nascimento"), formato));
-        ps.setTelefone(rs.getString("telefone"));
-        ps.setEndereco(rs.getString("endereco"));
-        ps.setRegistroProfissional(rs.getString("registro_profissional"));
-        ps.setTipo(CargoProfissional.valueOf(rs.getString("tipo_profissional")));
+        ps.setId(rs.getInt("prof_id_pessoa"));
+        ps.setNome(rs.getString("pes_nome"));
+        ps.setCpf(rs.getString("pes_cpf"));
+        ps.setDataNascimento(LocalDate.parse(rs.getString("pes_data_nascimento"), formato));
+        ps.setTelefone(rs.getString("pes_telefone"));
+        ps.setEndereco(rs.getString("pes_endereco"));
+        ps.setRegistroProfissional(rs.getString("prof_registro_profissional"));
+        ps.setTipo(CargoProfissional.valueOf(rs.getString("prof_tipo_profissional")));
         ps.setEspecialidade(montarEspecialidade(rs));
 
         return ps;
@@ -173,18 +241,18 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
 
     private Especialidade montarEspecialidade(ResultSet result) throws SQLException {
         Especialidade especialidade = new Especialidade();
-        especialidade.setId(result.getInt("id"));
-        especialidade.setNome(result.getString(("nome")));
-        especialidade.setDescricao(result.getString("descricao"));
+        especialidade.setId(result.getInt("esp_id"));
+        especialidade.setNome(result.getString(("esp_nome")));
+        especialidade.setDescricao(result.getString("esp_descricao"));
         return especialidade;
     }
 
     private PostoSaude montarPostoSaude(ResultSet rs) throws SQLException {
         PostoSaude ps = new PostoSaude();
-        ps.setId(rs.getInt("id"));
-        ps.setNome(rs.getString("nome"));
-        ps.setEndereco(rs.getString("endereco"));
-        ps.setTelefone("telefone");
+        ps.setId(rs.getInt("posto_id"));
+        ps.setNome(rs.getString("posto_nome"));
+        ps.setEndereco(rs.getString("posto_endereco"));
+        ps.setTelefone(rs.getString("posto_telefone"));
 
         return ps;
     }

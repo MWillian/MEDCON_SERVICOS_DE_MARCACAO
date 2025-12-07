@@ -1,10 +1,13 @@
 package br.com.medcon.vo;
+
 import java.time.LocalDateTime;
+
 import br.com.medcon.enums.StatusAgendamento;
+
 public class Agendamento {
     
     private int id;
-    private Solicitacao solicitacao; 
+    private Paciente paciente; 
     private ProfissionalSaude profissional;
     private PostoSaude posto; 
     private LocalDateTime dataHoraInicio;
@@ -13,11 +16,12 @@ public class Agendamento {
     private String laudo;
 
     public Agendamento() {}
-    public Agendamento(int id, Solicitacao solicitacao, ProfissionalSaude profissional, 
+    
+    public Agendamento(int id, Paciente paciente, ProfissionalSaude profissional, 
                        PostoSaude posto, LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim, 
                        StatusAgendamento status, String laudo) {
         this.id = id;
-        this.solicitacao = solicitacao;
+        this.paciente = paciente;
         this.profissional = profissional;
         this.posto = posto;
         this.dataHoraInicio = dataHoraInicio;
@@ -28,18 +32,25 @@ public class Agendamento {
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
-    public Solicitacao getSolicitacao() { return solicitacao; }
-    public void setSolicitacao(Solicitacao solicitacao) { this.solicitacao = solicitacao; }
+
+    public Paciente getPaciente() { return paciente; }
+    public void setPaciente(Paciente paciente) { this.paciente = paciente; }
+
     public ProfissionalSaude getProfissional() { return profissional; }
     public void setProfissional(ProfissionalSaude profissional) { this.profissional = profissional; }
+
     public PostoSaude getPosto() { return posto; }
     public void setPosto(PostoSaude posto) { this.posto = posto; }
+
     public LocalDateTime getDataHoraInicio() { return dataHoraInicio; }
     public void setDataHoraInicio(LocalDateTime dataHoraInicio) { this.dataHoraInicio = dataHoraInicio; }
+
     public LocalDateTime getDataHoraFim() { return dataHoraFim; }
     public void setDataHoraFim(LocalDateTime dataHoraFim) { this.dataHoraFim = dataHoraFim; }
+
     public StatusAgendamento getStatus() { return status; }
     public void setStatus(StatusAgendamento status) { this.status = status; }
+
     public String getLaudo() { return laudo; }
     public void setLaudo(String laudo) { this.laudo = laudo; }
 }
