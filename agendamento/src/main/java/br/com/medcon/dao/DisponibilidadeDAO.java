@@ -1,20 +1,15 @@
 package br.com.medcon.dao;
 
-import java.security.DrbgParameters.Reseed;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.zip.DataFormatException;
 
 import br.com.medcon.enums.CargoProfissional;
 import br.com.medcon.interfaces.IDisponibilidadeDAO;

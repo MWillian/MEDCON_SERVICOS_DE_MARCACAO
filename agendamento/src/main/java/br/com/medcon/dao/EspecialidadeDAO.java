@@ -1,6 +1,5 @@
 package br.com.medcon.dao;
 
-import br.com.medcon.interfaces.IDAO;
 import br.com.medcon.interfaces.IEspecialidade;
 import br.com.medcon.vo.Especialidade;
 import java.sql.Connection;
