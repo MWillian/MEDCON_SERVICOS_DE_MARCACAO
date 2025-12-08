@@ -6,16 +6,19 @@ import br.com.medcon.bo.AgendamentoBO;
 import br.com.medcon.bo.DisponibilidadeBO;
 import br.com.medcon.bo.EspecialidadeBO;
 import br.com.medcon.bo.PacienteBO;
+import br.com.medcon.bo.PostoSaudeBO;
 import br.com.medcon.bo.ProfissionalPostoBO;
 import br.com.medcon.bo.TipoServicoBO;
 import br.com.medcon.dao.AgendamentoDAO;
 import br.com.medcon.dao.DisponibilidadeDAO;
 import br.com.medcon.dao.EspecialidadeDAO;
 import br.com.medcon.dao.PacienteDAO;
+import br.com.medcon.dao.PostoSaudeDAO;
 import br.com.medcon.dao.ProfissionalPostoDAO;
 import br.com.medcon.dao.TipoServicoDAO;
 import br.com.medcon.view.MenuAdminView;
 import br.com.medcon.view.MenuPacienteView;
+;
 
 public class Main {
     public static void main(String[] args) {
@@ -43,7 +46,8 @@ public class Main {
                 especialidadeBO, 
                 disponibilidadeBO, 
                 agendamentoBO,
-                profissionalPostoBO
+                profissionalPostoBO,
+                postoSaudeBO
             );
             
             MenuAdminView menuAdmin = new MenuAdminView(scanner, tipoServicoBO );
