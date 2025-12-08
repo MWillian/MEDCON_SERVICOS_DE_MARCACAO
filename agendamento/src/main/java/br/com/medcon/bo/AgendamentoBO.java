@@ -14,7 +14,7 @@ public class AgendamentoBO {
         this.agendamentoDAO = agendamentoDAO;
     }
 
-    private void salvar(Agendamento agendamento) {
+    public void salvar(Agendamento agendamento) {
         try {
             agendamentoDAO.salvar(agendamento);
         } catch (SQLException e) {

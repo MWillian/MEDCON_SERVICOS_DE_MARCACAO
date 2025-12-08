@@ -31,8 +31,8 @@ public class AgendamentoDAO implements IDAO<Agendamento> {
     public void salvar(Agendamento objeto) throws SQLException {
         String sql = """
                 INSERT INTO tb_agendamento
-                (id_paciente, id_profissional, id_posto, data_hora_inicio, data_hora_fim, status, laudo)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                (id_paciente, id_profissional, id_posto, data_hora_inicio, status, laudo_resultado)
+                VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
         try (Connection conn = factory.getConexao();
@@ -42,7 +42,7 @@ public class AgendamentoDAO implements IDAO<Agendamento> {
             stmt.setInt(2, objeto.getProfissional().getId());
             stmt.setInt(3, objeto.getPosto().getId());
             stmt.setTimestamp(4, Timestamp.valueOf(objeto.getDataHoraInicio()));
-            stmt.setTimestamp(5, Timestamp.valueOf(objeto.getDataHoraFim()));
+            // stmt.setTimestamp(5, Timestamp.valueOf(objeto.getDataHoraFim()));
             stmt.setString(6, objeto.getStatus().name());
             stmt.setString(7, objeto.getLaudo());
 
@@ -106,7 +106,7 @@ public class AgendamentoDAO implements IDAO<Agendamento> {
                 "    ag.id_profissional AS ag_id_profissional, " +
                 "    ag.id_posto AS ag_id_posto, " +
                 "    ag.data_hora_inicio AS ag_data_hora_inicio, " +
-                "    ag.data_hora_fim AS ag_data_hora_fim, " +
+                // "    ag.data_hora_fim AS ag_data_hora_fim, " +
                 "    ag.status AS ag_status, " +
                 "    ag.laudo_resultado AS ag_laudo, " +
                 // tb_paciente
@@ -189,7 +189,7 @@ public class AgendamentoDAO implements IDAO<Agendamento> {
                 "    ag.id_profissional AS ag_id_profissional, " +
                 "    ag.id_posto AS ag_id_posto, " +
                 "    ag.data_hora_inicio AS ag_data_hora_inicio, " +
-                "    ag.data_hora_fim AS ag_data_hora_fim, " +
+                // "    ag.data_hora_fim AS ag_data_hora_fim, " +
                 "    ag.status AS ag_status, " +
                 "    ag.laudo_resultado AS ag_laudo, " +
 
@@ -304,7 +304,7 @@ public class AgendamentoDAO implements IDAO<Agendamento> {
         ag.setProfissional(montarProfissional(rs));
         ag.setPosto(montarPostoSaude(rs));
         ag.setDataHoraInicio(rs.getTimestamp("ag_data_hora_inicio").toLocalDateTime());
-        ag.setDataHoraFim(rs.getTimestamp("ag_data_hora_fim").toLocalDateTime());
+        // ag.setDataHoraFim(rs.getTimestamp("ag_data_hora_fim").toLocalDateTime());
         ag.setStatus(StatusAgendamento.valueOf(rs.getString("ag_status")));
         ag.setLaudo(rs.getString("ag_laudo"));
 

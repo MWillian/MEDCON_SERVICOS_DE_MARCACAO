@@ -1,10 +1,12 @@
 package br.com.medcon.view;
 
+import br.com.medcon.bo.AgendamentoBO;
 import br.com.medcon.bo.DisponibilidadeBO;
 import br.com.medcon.bo.EspecialidadeBO;
 import br.com.medcon.bo.PacienteBO;
 import br.com.medcon.bo.exception.NegocioException;
 import br.com.medcon.dao.DisponibilidadeDAO;
+import br.com.medcon.vo.Agendamento;
 import br.com.medcon.vo.Disponibilidade;
 import br.com.medcon.vo.Especialidade;
 import br.com.medcon.vo.Paciente;
@@ -26,18 +28,21 @@ public class MenuPacienteView {
     private final TipoServicoBO tipoServicoBO;
     private final EspecialidadeBO especialidadeBO;
     private final DisponibilidadeBO disponibilidadeBO;
+    private final AgendamentoBO agendamentoBO;
 
     public MenuPacienteView(
             Scanner scanner,
             PacienteBO pacienteBO,
             TipoServicoBO tipoServicoBO,
             EspecialidadeBO especialidadeBO,
-            DisponibilidadeBO disponibilidadeBO) {
+            DisponibilidadeBO disponibilidadeBO,
+            AgendamentoBO agendamentoBO) {
         this.scanner = scanner;
         this.pacienteBO = pacienteBO;
         this.tipoServicoBO = tipoServicoBO;
         this.especialidadeBO = especialidadeBO;
         this.disponibilidadeBO = disponibilidadeBO;
+        this.agendamentoBO = agendamentoBO;
     }
 
     public void iniciar() {
@@ -159,6 +164,10 @@ public class MenuPacienteView {
                 Especialidade esp = escolherEspecialidades();
                 if (esp != null) {
                     PostoSaude posto = escolherPosto();
+
+                    // TO-DO: Concluir agendamento
+                    Agendamento ag = new Agendamento();
+                    agendamentoBO.salvar(ag);
                 }
             } else {
                 System.out.println("Serviço não encontrado. Tente novamente.");
