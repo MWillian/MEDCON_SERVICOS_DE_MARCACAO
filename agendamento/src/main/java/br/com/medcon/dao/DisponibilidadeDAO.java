@@ -93,7 +93,7 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
                 "pes.endereco AS pes_endereco, " +
                 "pes.telefone AS pes_telefone, " +
 
-                // tb_especialidade <-- **adicionei esp.descricao aqui**
+                // tb_especialidade
                 "esp.id AS esp_id, " +
                 "esp.nome AS esp_nome, " +
                 "esp.descricao AS esp_descricao, " +
@@ -102,7 +102,7 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
                 "po.id AS posto_id, " +
                 "po.nome AS posto_nome, " +
                 "po.endereco AS posto_endereco, " +
-                "po.telefone AS posto_telefone " + // sem vírgula aqui
+                "po.telefone AS posto_telefone " +
 
                 "FROM tb_disponibilidade d " +
 
@@ -157,7 +157,7 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
                 "pes.endereco AS pes_endereco, " +
                 "pes.telefone AS pes_telefone, " +
 
-                // tb_especialidade <-- **adicionei esp.descricao aqui**
+                // tb_especialidade
                 "esp.id AS esp_id, " +
                 "esp.nome AS esp_nome, " +
                 "esp.descricao AS esp_descricao, " +
@@ -166,7 +166,7 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
                 "po.id AS posto_id, " +
                 "po.nome AS posto_nome, " +
                 "po.endereco AS posto_endereco, " +
-                "po.telefone AS posto_telefone " + // sem vírgula aqui
+                "po.telefone AS posto_telefone " +
 
                 "FROM tb_disponibilidade d " +
 
