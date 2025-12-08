@@ -4,8 +4,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 import br.com.medcon.vo.Disponibilidade;
-import br.com.medcon.vo.PostoSaude;
-import br.com.medcon.vo.ProfissionalSaude;
 
 public interface IDisponibilidadeDAO {
     void salvar(Disponibilidade disponibilidade)throws SQLException;
@@ -18,7 +16,9 @@ public interface IDisponibilidadeDAO {
 
     List<Disponibilidade>buscarTodos() throws SQLException;
 
-    ProfissionalSaude buscaPorMedico(int idMedico) throws SQLException;
+    List<Disponibilidade> buscarPorMedico(int idMedico) throws SQLException;
 
-    PostoSaude buscaPorPosto(int idMedico) throws SQLException;
+    List<Disponibilidade> buscarPorPosto(int idMedico) throws SQLException;
+
+    List<Disponibilidade> buscarPorEspecialidade(int idEspecialidade) throws SQLException;
 }

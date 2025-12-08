@@ -5,7 +5,7 @@ import java.util.List;
 import br.com.medcon.bo.exception.NegocioException;
 import br.com.medcon.dao.DisponibilidadeDAO;
 import br.com.medcon.vo.Disponibilidade;
-import br.com.medcon.vo.ProfissionalSaude;
+import br.com.medcon.vo.Especialidade;
 
 public class DisponibilidadeBO {
     private final DisponibilidadeDAO disponibilidadeDAO;
@@ -20,30 +20,24 @@ public class DisponibilidadeBO {
         disponibilidadeDAO.salvar(disponibilidade);
     }
 
-    public List<Disponibilidade> listarTodos() throws SQLException {
+    public List<Disponibilidade> buscarTodos() throws SQLException {
         return disponibilidadeDAO.buscarTodos();
     }
 
     public Disponibilidade buscarPorId(int id) throws NegocioException, SQLException {
-        try {
-            Disponibilidade esp = disponibilidadeDAO.buscarPorId(id);
-
-            if (esp == null) {
-                throw new NegocioException("Disponibilidade com ID " + id + " não encontrada.");
-            }
-            return esp;
-
-        } catch (SQLException e) {
-            throw new SQLException("Erro ao buscar a Disponibilidade.");
+        Disponibilidade esp = disponibilidadeDAO.buscarPorId(id);
+        if (esp == null) {
+            throw new NegocioException("Disponibilidade com ID " + id + " não encontrada.");
         }
+        return esp;
     }
 
     //MÉTODOS AUXILIARES
     private void ValidarCamposObrigatorios(Disponibilidade d) throws NegocioException{
-        if (d.getProfissional().getId() <= 0) {
+        if (d.getProfissional() == null || d.getProfissional().getId() <= 0) {
             throw new NegocioException("A disponibilidade deve estar vinculada a um Profissional.");
         }
-
+        
         if (d.getPosto() == null || d.getPosto().getId() <= 0) {
             throw new NegocioException("A disponibilidade deve estar vinculada a um Posto de Saúde.");
         }
@@ -64,7 +58,15 @@ public class DisponibilidadeBO {
         }
     }
 
-    public ProfissionalSaude buscarPorMedico(int id) throws SQLException {
-        return disponibilidadeDAO.buscaPorMedico(id);
+    public List<Disponibilidade>  buscarPorMedico(int id) throws SQLException {
+        return disponibilidadeDAO.buscarPorMedico(id);
+    }
+
+    public List<Disponibilidade> buscarPorEspecialidade(Especialidade especialidade) throws SQLException, NegocioException {
+        if (especialidade == null || especialidade.getId() <= 0) {
+            throw new NegocioException("Especialidade inválida para a busca.");
+        }
+
+        return this.disponibilidadeDAO.buscarPorEspecialidade(especialidade.getId());
     }
 }

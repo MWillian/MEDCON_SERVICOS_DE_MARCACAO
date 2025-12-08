@@ -1,7 +1,7 @@
 package br.com.medcon.view;
 import java.sql.SQLException;
 import java.util.Scanner;
-import br.com.medcon.bo.PacienteBO; 
+
 import br.com.medcon.bo.TipoServicoBO;
 
 public class MenuAdminView {

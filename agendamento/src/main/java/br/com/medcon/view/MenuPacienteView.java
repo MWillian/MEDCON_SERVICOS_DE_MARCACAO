@@ -1,43 +1,34 @@
 package br.com.medcon.view;
-import br.com.medcon.vo.*;
-import br.com.medcon.bo.*;
-import br.com.medcon.bo.exception.*;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Scanner;
 
 import br.com.medcon.bo.AgendamentoBO;
 import br.com.medcon.bo.DisponibilidadeBO;
 import br.com.medcon.bo.EspecialidadeBO;
 import br.com.medcon.bo.PacienteBO;
 import br.com.medcon.bo.ProfissionalPostoBO;
+import br.com.medcon.bo.TipoServicoBO;
 import br.com.medcon.bo.exception.NegocioException;
-import br.com.medcon.dao.DisponibilidadeDAO;
 import br.com.medcon.enums.StatusAgendamento;
-import br.com.medcon.vo.Agendamento;
+import br.com.medcon.vo.Agendamento;    
 import br.com.medcon.vo.Disponibilidade;
 import br.com.medcon.vo.Especialidade;
 import br.com.medcon.vo.Paciente;
-import br.com.medcon.vo.PostoSaude;
-import br.com.medcon.vo.ProfissionalPosto;
-import br.com.medcon.vo.ProfissionalSaude;
 import br.com.medcon.vo.TipoServico;
-import br.com.medcon.bo.TipoServicoBO;
-
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.List;
-import java.util.Scanner;
 
 public class MenuPacienteView {
     private final Scanner scanner;
     private final PacienteBO pacienteBO;
     private Paciente pacienteLogado;
     private final TipoServicoBO tipoServicoBO;
-    private final EspecialidadeBO especialidadeBO;
     private final DisponibilidadeBO disponibilidadeBO;
     private final AgendamentoBO agendamentoBO;
-    private final ProfissionalPostoBO profissionalPostoBO;
 
     public MenuPacienteView(
             Scanner scanner,
@@ -50,13 +41,11 @@ public class MenuPacienteView {
         this.scanner = scanner;
         this.pacienteBO = pacienteBO;
         this.tipoServicoBO = tipoServicoBO;
-        this.especialidadeBO = especialidadeBO;
         this.disponibilidadeBO = disponibilidadeBO;
         this.agendamentoBO = agendamentoBO;
-        this.profissionalPostoBO = profissionalPostoBO;
     }
 
-    public void iniciar() {
+    public void iniciar() throws NegocioException {
         while (true) {
             System.out.println("\n=== ÁREA DO PACIENTE ===");
             System.out.println("1. Já tenho cadastro (Login) ");
@@ -64,11 +53,12 @@ public class MenuPacienteView {
             System.out.println("3. Voltar ao Menu Principal");
             System.out.print("> Opção: ");
             String opcao = scanner.nextLine();
+
             switch (opcao) {
                 case "1" -> fazerLogin();
                 case "2" -> cadastrarPaciente();
                 case "3" -> {
-                    break;
+                    return;
                 }
                 default -> System.out.println("Opção inválida.");
             }
@@ -76,12 +66,13 @@ public class MenuPacienteView {
     }
 
     // ACESSO AO SISTEMA
-    private void fazerLogin() {
+    private void fazerLogin() throws NegocioException {
         System.out.println("\n--- LOGIN ---");
         System.out.print("Digite seu CPF (apenas números): ");
         String cpf = scanner.nextLine();
         try {
             Paciente p = pacienteBO.buscarPorCpf(cpf);
+            
             if (p != null) {
                 this.pacienteLogado = p;
                 System.out.println("Bem-vindo de volta, " + p.getNome() + "!");
@@ -99,22 +90,30 @@ public class MenuPacienteView {
             System.out.println("\n--- NOVO CADASTRO ---");
             System.out.print("Nome Completo: ");
             String nome = scanner.nextLine();
+
             System.out.print("CPF (XXX.XXX.XXX-XX): ");
             String cpf = scanner.nextLine();
+
             System.out.print("Data Nascimento (dd/MM/yyyy): ");
             String dataTexto = scanner.nextLine();
+            
             LocalDate dataNasc = LocalDate.parse(dataTexto, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             System.out.print("Telefone: ");
             String fone = scanner.nextLine();
+
             System.out.print("Endereço: ");
             String endereco = scanner.nextLine();
+
             System.out.print("Cartão SUS: ");
             String cartaoSus = scanner.nextLine();
+
             Paciente novoPaciente = new Paciente(0, nome, cpf, dataNasc, fone, endereco, cartaoSus);
             pacienteBO.salvar(novoPaciente);
+
             System.out.println("Cadastro realizado com sucesso! Bem-vindo(a), " + nome);
             this.pacienteLogado = novoPaciente;
             System.out.println("Cadastro realizado! Você está logado.");
+
             exibirMenuLogado();
         } catch (NegocioException e) {
             System.out.println("ALERTA: " + e.getMessage());
@@ -122,13 +121,13 @@ public class MenuPacienteView {
             System.out.println("Erro: Data inválida. Use o formato dd/MM/yyyy");
         } catch (SQLException e) {
             System.out.println("Erro interno no sistema. Tente novamente mais tarde.");
-            e.printStackTrace(); // erro genérico no banco.
+            e.printStackTrace();
         } catch (Exception e) {
-            System.out.println("Erro inesperado: " + e.getMessage()); // erro genérico no sistema
+            System.out.println("Erro inesperado: " + e.getMessage()); 
         }
     }
 
-    private void exibirMenuLogado() {
+    private void exibirMenuLogado() throws NegocioException {
         while (pacienteLogado != null) {
             System.out.println("\n--- OLÁ, " + pacienteLogado.getNome().toUpperCase() + " ---");
             System.out.println("1. Nova Solicitação de Agendamento");
@@ -137,20 +136,21 @@ public class MenuPacienteView {
             System.out.println("0. Sair (Deslogar)");
             System.out.print("> Opção: ");
             String opcao = scanner.nextLine();
+
             switch (opcao) {
                 case "1" -> novaSolicitacao();
                 case "3" -> mostrarDados();
                 case "0" -> {
-                    this.pacienteLogado = null; // Limpa sessão
+                    this.pacienteLogado = null;
                     System.out.println("Deslogado com sucesso.");
-                    break; // Volta para o menu de Login
+                    break;
                 }
                 default -> System.out.println("Opção inválida.");
             }
         }
     }
 
-    private void novaSolicitacao() {
+    private void novaSolicitacao() throws NegocioException {
         System.out.println("\n=== NOVO AGENDAMENTO: SELECIONE O SERVIÇO ===");
         try {
             List<TipoServico> servicos = tipoServicoBO.listarTodos();
@@ -158,88 +158,100 @@ public class MenuPacienteView {
                 System.out.println("Nenhum serviço cadastrado no sistema no momento.");
                 return;
             }
-            for (TipoServico servico : servicos) {
-                // Exibe: [1] - Cardiologia (30 min)
-                System.out.printf("[%d] - Serviço: %s, Duração Média: (%d min)\n", servico.getId(), servico.getNome(),
-                        servico.getDuracaoMinutos());
+
+            for (TipoServico s : servicos) {
+                System.out.printf("[%d] - Serviço: %s, Duração Média: (%d min)\n", s.getId(), s.getNome(),s.getDuracaoMinutos());
             }
+
             System.out.println("0 - Voltar");
             System.out.print("> Digite o ID do serviço desejado: ");
-            String entrada = scanner.nextLine();
-            int idEscolhido = Integer.parseInt(entrada);
-            if (idEscolhido == 0)
+            System.out.print("> Digite o ID do serviço: ");
+            int idServico = Integer.parseInt(scanner.nextLine());
+            TipoServico servicoSelecionado = tipoServicoBO.buscarPorId (idServico);
+            
+            if (servicoSelecionado == null) {
+                System.out.println("Serviço inválido.");
                 return;
-            TipoServico servicoSelecionado = tipoServicoBO.buscarPorId(idEscolhido);
-            if (servicoSelecionado != null) {
-                System.out.println("Você selecionou: " + servicoSelecionado.getNome());
-                Especialidade esp = escolherEspecialidades();
-                if (esp != null) {
-                    ProfissionalPosto pp = escolherProfissionalPosto();
-                    PostoSaude posto = pp.getPosto();
-                    ProfissionalSaude profPosto = pp.getProfissional();
-                    System.out.println(profPosto);
-                    // TO-DO: Concluir agendamento
+            }
+
+            System.out.println("Selecionado: " + servicoSelecionado.getNome());
+
+            Especialidade esp = servicoSelecionado.getEspecialidadeNecessaria();
+            System.out.println("Especialidade requerida: " + esp.getNome());
+            Disponibilidade disponibilidade = escolherDisponibilidade(esp);
+
+            if (disponibilidade != null) {
+                LocalDate dataAgendamento = calcularProximaData(disponibilidade.getDiaSemana());
+
+                LocalTime horaInicio = disponibilidade.getHoraInicio();
+                LocalDateTime dataHoraInicio = LocalDateTime.of(dataAgendamento, horaInicio);
+
+                System.out.println("\n=== CONFIRMAÇÃO ===");
+                System.out.println("Serviço: " + servicoSelecionado.getNome());
+                System.out.println("Médico: " + disponibilidade.getProfissional().getNome());
+                System.out.println("Local: " + disponibilidade.getPosto().getNome());
+                System.out.println("Data: " + dataHoraInicio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+                
+                System.out.print("Confirmar? (S/N): ");
+                if (scanner.nextLine().equalsIgnoreCase("S")) {
+                    
                     Agendamento ag = new Agendamento();
                     ag.setPaciente(pacienteLogado);
-                    ag.setPosto(posto);
-                    ag.setProfissional(profPosto);
-                    ag.setDataHoraInicio(LocalDateTime.now());
+                    ag.setPosto(disponibilidade.getPosto());
+                    ag.setProfissional(disponibilidade.getProfissional());
+                    ag.setDataHoraInicio(dataHoraInicio);
                     ag.setStatus(StatusAgendamento.AGENDADA);
-                    ag.setLaudo("Laudo em breve");
-                    
-                    agendamentoBO.salvar(ag);
+                    ag.setLaudo("Aguardando atendimento");
+
+                    agendamentoBO.salvar(ag, servicoSelecionado.getDuracaoMinutos());
+                    System.out.println("✅ Agendamento realizado com sucesso!");
+                } else {
+                    System.out.println("Operação cancelada.");
                 }
-            } else {
-                System.out.println("Serviço não encontrado. Tente novamente.");
             }
         } catch (NumberFormatException e) {
             System.out.println("Digite apenas números.");
         } catch (SQLException e) {
-            System.out.println("Erro ao buscar serviços: " + e.getMessage());
-        }
-    }
-
-    private Especialidade escolherEspecialidades() {
-        System.out.println("\n=== SELECIONE A ESPECIALIDADE ===");
-        Especialidade especialidadeSelecionada = null;
-        try {
-            List<Especialidade> especialidades = especialidadeBO.listarTodos();
-            for (Especialidade especialidade : especialidades) {
-                System.out.printf("[%d] - Especialidade: %s, Descrição: %s\n", especialidade.getId(),
-                        especialidade.getNome(), especialidade.getDescricao());
-            }
-            System.out.println("Selecione a especialidade pelo [ID], ex.: 3");
-            int id_selecionado = scanner.nextInt();
-            especialidadeSelecionada = especialidadeBO.buscarPorId(id_selecionado);
-        } catch (SQLException e) {
-            System.out.println("Erro inesperado do banco: " + e.getMessage());
+            System.out.println("Erro de banco: " + e.getMessage());
         } catch (NegocioException e) {
             System.out.println(e.getMessage());
         }
-        return especialidadeSelecionada;
     }
 
-    private ProfissionalPosto escolherProfissionalPosto () {
-        System.out.println("\n=== POSTOS DISPONÍVES PARA ESSE SERVIÇO ===");
-        ProfissionalPosto profissionalPosto = new ProfissionalPosto();
-        try {
-            List<Disponibilidade> postos = disponibilidadeBO.listarTodos();
-            for (Disponibilidade dis : postos) {
-                System.out.printf("[%d] - Nome: %s, Endereço: %s, Telefone: %s, Dia: %s, Horários[ Início: %s, Fim: %s ]\n", 
-                dis.getPosto().getId(), dis.getPosto().getNome(), dis.getPosto().getEndereco(), dis.getPosto().getTelefone(), dis.getDiaSemana().toString(), dis.getHoraInicio().toString(), dis.getHoraFim().toString());
-            }
-            System.out.println("Selecione o Posto pelo [ID], ex.: 3");
-            int id_selecionado = scanner.nextInt();
-            profissionalPosto.setPosto(disponibilidadeBO.buscarPorId(id_selecionado).getPosto()); 
-            profissionalPosto.setProfissional(disponibilidadeBO.buscarPorId(id_selecionado).getProfissional());
-        } catch (SQLException e) {
-            System.out.println("Erro inesperado do banco: " + e.getMessage());
-        }  catch (NegocioException e) {
-            System.out.println(e.getMessage());
+    private Disponibilidade escolherDisponibilidade(Especialidade esp) throws SQLException, NegocioException {
+        System.out.println("\n=== HORÁRIOS E LOCAIS DISPONÍVEIS ===");
+        
+        List<Disponibilidade> lista = disponibilidadeBO.buscarPorEspecialidade(esp);
+        
+        if (lista.isEmpty()) {
+            System.out.println("Não há médicos com agenda para esta especialidade.");
+            return null;
         }
-        return profissionalPosto;
+
+        for (Disponibilidade d : lista) {
+            System.out.printf("[%d] - %s | Dr. %s | %s | %s às %s\n",
+                d.getId(),
+                d.getPosto().getNome(),
+                d.getProfissional().getNome(),
+                d.getDiaSemana(),
+                d.getHoraInicio(),
+                d.getHoraFim()
+            );
+        }
+        
+        System.out.print("> Escolha o ID da agenda: ");
+        int id = Integer.parseInt(scanner.nextLine());
+        return disponibilidadeBO.buscarPorId(id);
     }
 
+    private LocalDate calcularProximaData(java.time.DayOfWeek diaSemanaAlvo) {
+        LocalDate data = LocalDate.now();
+        while (data.getDayOfWeek() != diaSemanaAlvo) {
+            data = data.plusDays(1);
+        }
+        return data;
+    }
+    
     private void mostrarDados() {
         System.out.println("\n--- MEUS DADOS ---");
         System.out.println("Nome: " + pacienteLogado.getNome());
