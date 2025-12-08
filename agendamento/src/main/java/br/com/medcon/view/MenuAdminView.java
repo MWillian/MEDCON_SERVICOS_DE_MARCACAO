@@ -1,7 +1,9 @@
 package br.com.medcon.view;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 import br.com.medcon.bo.DisponibilidadeBO;
@@ -143,13 +145,28 @@ public class MenuAdminView {
         } else if (op.equals("2")) {
             ProfissionalSaude p = new ProfissionalSaude();
 
-            System.out.print("Nome: "); p.setNome(scanner.nextLine());
-            System.out.print("CPF: "); p.setCpf(scanner.nextLine());
-            System.out.print("Registro (CRM/COREN): "); p.setRegistroProfissional(scanner.nextLine());
-            System.out.print("Telefone: "); p.setTelefone(scanner.nextLine());
-            System.out.print("Endereço: "); p.setEndereco(scanner.nextLine());
-            
+            System.out.print("Nome: "); 
+            p.setNome(scanner.nextLine());
+
+            System.out.print("CPF: "); 
+            p.setCpf(scanner.nextLine());
+
+            System.out.println("Data de Nascimento (dd/MM/yyyy): "); 
+            String dataTexto = scanner.nextLine();
+            LocalDate dataNascimento = LocalDate.parse(dataTexto,DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            p.setDataNascimento(dataNascimento);
+
+            System.out.print("Registro Profissional: "); 
+            p.setRegistroProfissional(scanner.nextLine());
+
+            System.out.print("Telefone: "); 
+            p.setTelefone(scanner.nextLine());
+
+            System.out.print("Endereço: "); 
+            p.setEndereco(scanner.nextLine());
+
             System.out.println("Cargo (1-MEDICO, 2-ENFERMEIRO, 3-TECNICO): ");
+
             int cargo = Integer.parseInt(scanner.nextLine());
             p.setTipo(cargo == 1 ? CargoProfissional.MEDICO : cargo == 2 ? CargoProfissional.ENFERMEIRO : CargoProfissional.TECNICO);
 
