@@ -93,15 +93,16 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
                 "pes.endereco AS pes_endereco, " +
                 "pes.telefone AS pes_telefone, " +
 
-                // tb_especialidade
+                // tb_especialidade <-- **adicionei esp.descricao aqui**
                 "esp.id AS esp_id, " +
                 "esp.nome AS esp_nome, " +
+                "esp.descricao AS esp_descricao, " +
 
                 // tb_posto
                 "po.id AS posto_id, " +
                 "po.nome AS posto_nome, " +
                 "po.endereco AS posto_endereco, " +
-                "po.telefone AS posto_telefone " +
+                "po.telefone AS posto_telefone " + // sem vírgula aqui
 
                 "FROM tb_disponibilidade d " +
 
@@ -156,7 +157,7 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
                 "pes.endereco AS pes_endereco, " +
                 "pes.telefone AS pes_telefone, " +
 
-                // tb_especialidade
+                // tb_especialidade <-- **adicionei esp.descricao aqui**
                 "esp.id AS esp_id, " +
                 "esp.nome AS esp_nome, " +
                 "esp.descricao AS esp_descricao, " +
@@ -165,7 +166,7 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
                 "po.id AS posto_id, " +
                 "po.nome AS posto_nome, " +
                 "po.endereco AS posto_endereco, " +
-                "po.telefone AS posto_telefone " +
+                "po.telefone AS posto_telefone " + // sem vírgula aqui
 
                 "FROM tb_disponibilidade d " +
 
@@ -194,7 +195,7 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
     public ProfissionalSaude buscaPorMedico(int idMedico) throws SQLException {
         ProfissionalSaude ps = null;
         String sql = "SELECT " +
-                // tb_profissional
+        // tb_profissional
                 "prof.id_pessoa AS prof_id_pessoa, " +
                 "prof.id_especialidade AS prof_id_especialidade, " +
                 "prof.registro_profissional AS prof_registro_profissional, " +
@@ -211,20 +212,21 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
                 // tb_especialidade
                 "esp.id AS esp_id, " +
                 "esp.nome AS esp_nome, " +
-                "esp.descricao AS esp_descricao, " +
+                "esp.descricao AS esp_descricao " +
 
                 "FROM tb_disponibilidade d " +
-
-                "INNER JOIN tb_pessoa pes " + 
-                "ON prof.id_pessoa = pes.id " +
 
                 "INNER JOIN tb_profissional prof " +
                 "ON d.id_profissional = prof.id_pessoa " +
 
-                "INNER JOIN tb_especialidade esp " + 
+                "INNER JOIN tb_pessoa pes " +
+                "ON prof.id_pessoa = pes.id " +
+
+                "INNER JOIN tb_especialidade esp " +
                 "ON prof.id_especialidade = esp.id " +
 
                 "WHERE d.id = ? AND prof.tipo_profissional = 'MEDICO';";
+
         try (Connection conn = factory.getConexao();
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet result = stmt.executeQuery()) {

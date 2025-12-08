@@ -34,7 +34,7 @@ public class DisponibilidadeBO {
             return esp;
 
         } catch (SQLException e) {
-            throw new NegocioException("Erro ao buscar a Disponibilidade.");
+            throw new NegocioException(e.getMessage());
         }
     }
 

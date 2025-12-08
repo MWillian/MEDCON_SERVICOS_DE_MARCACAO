@@ -4,6 +4,7 @@ import br.com.medcon.bo.AgendamentoBO;
 import br.com.medcon.bo.DisponibilidadeBO;
 import br.com.medcon.bo.EspecialidadeBO;
 import br.com.medcon.bo.PacienteBO;
+import br.com.medcon.bo.PostoSaudeBO;
 import br.com.medcon.bo.ProfissionalPostoBO;
 import br.com.medcon.bo.exception.NegocioException;
 import br.com.medcon.dao.DisponibilidadeDAO;
@@ -35,6 +36,7 @@ public class MenuPacienteView {
     private final DisponibilidadeBO disponibilidadeBO;
     private final AgendamentoBO agendamentoBO;
     private final ProfissionalPostoBO profissionalPostoBO;
+    private final PostoSaudeBO postoSaudeBO;
 
     public MenuPacienteView(
             Scanner scanner,
@@ -43,7 +45,8 @@ public class MenuPacienteView {
             EspecialidadeBO especialidadeBO,
             DisponibilidadeBO disponibilidadeBO,
             AgendamentoBO agendamentoBO,
-            ProfissionalPostoBO profissionalPostoBO) {
+            ProfissionalPostoBO profissionalPostoBO,
+            PostoSaudeBO postoSaudeBO) {
         this.scanner = scanner;
         this.pacienteBO = pacienteBO;
         this.tipoServicoBO = tipoServicoBO;
@@ -51,6 +54,7 @@ public class MenuPacienteView {
         this.disponibilidadeBO = disponibilidadeBO;
         this.agendamentoBO = agendamentoBO;
         this.profissionalPostoBO = profissionalPostoBO;
+        this.postoSaudeBO = postoSaudeBO;
     }
 
     public void iniciar() {
@@ -171,20 +175,21 @@ public class MenuPacienteView {
                 System.out.println("Você selecionou: " + servicoSelecionado.getNome());
                 Especialidade esp = escolherEspecialidades();
                 if (esp != null) {
-                    ProfissionalPosto pp = escolherProfissionalPosto();
-                    PostoSaude posto = pp.getPosto();
-                    ProfissionalSaude profPosto = pp.getProfissional();
-                    System.out.println(profPosto);
+                    PostoSaude posto = escolherPosto();
+                    System.out.println(posto);
+                    Disponibilidade d = disponibilidadeBO.buscarPorId(2);
+                    System.out.println(d);
                     // TO-DO: Concluir agendamento
+                    /*
                     Agendamento ag = new Agendamento();
                     ag.setPaciente(pacienteLogado);
                     ag.setPosto(posto);
-                    ag.setProfissional(profPosto);
                     ag.setDataHoraInicio(LocalDateTime.now());
                     ag.setStatus(StatusAgendamento.AGENDADA);
                     ag.setLaudo("Laudo em breve");
                     
                     agendamentoBO.salvar(ag);
+                     */
                 }
             } else {
                 System.out.println("Serviço não encontrado. Tente novamente.");
@@ -193,6 +198,9 @@ public class MenuPacienteView {
             System.out.println("Digite apenas números.");
         } catch (SQLException e) {
             System.out.println("Erro ao buscar serviços: " + e.getMessage());
+        } catch (NegocioException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
@@ -216,25 +224,21 @@ public class MenuPacienteView {
         return especialidadeSelecionada;
     }
 
-    private ProfissionalPosto escolherProfissionalPosto () {
+    private PostoSaude escolherPosto () {
         System.out.println("\n=== POSTOS DISPONÍVES PARA ESSE SERVIÇO ===");
-        ProfissionalPosto profissionalPosto = new ProfissionalPosto();
+        PostoSaude postoSaude = new PostoSaude();
         try {
-            List<Disponibilidade> postos = disponibilidadeBO.listarTodos();
-            for (Disponibilidade dis : postos) {
-                System.out.printf("[%d] - Nome: %s, Endereço: %s, Telefone: %s, Dia: %s, Horários[ Início: %s, Fim: %s ]\n", 
-                dis.getPosto().getId(), dis.getPosto().getNome(), dis.getPosto().getEndereco(), dis.getPosto().getTelefone(), dis.getDiaSemana().toString(), dis.getHoraInicio().toString(), dis.getHoraFim().toString());
+            List<PostoSaude> postos = postoSaudeBO.listarTodos();
+            for (PostoSaude p : postos) {
+                System.out.printf("[%d] - Nome: %s, Endereço: %s, Telefone: %s\n", p.getId(), p.getNome(), p.getEndereco(), p.getTelefone());
             }
             System.out.println("Selecione o Posto pelo [ID], ex.: 3");
             int id_selecionado = scanner.nextInt();
-            profissionalPosto.setPosto(disponibilidadeBO.buscarPorId(id_selecionado).getPosto()); 
-            profissionalPosto.setProfissional(disponibilidadeBO.buscarPorId(id_selecionado).getProfissional());
+            postoSaude = postoSaudeBO.buscarPorId(id_selecionado);
         } catch (SQLException e) {
             System.out.println("Erro inesperado do banco: " + e.getMessage());
-        }  catch (NegocioException e) {
-            System.out.println(e.getMessage());
         }
-        return profissionalPosto;
+        return postoSaude;
     }
 
     private void mostrarDados() {
