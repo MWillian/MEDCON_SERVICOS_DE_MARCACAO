@@ -34,7 +34,33 @@ public class DisponibilidadeBO {
             return esp;
 
         } catch (SQLException e) {
-            throw new NegocioException(e.getMessage());
+            throw new SQLException("Erro ao buscar a Disponibilidade.");
+        }
+    }
+
+    //MÉTODOS AUXILIARES
+    private void ValidarCamposObrigatorios(Disponibilidade d) throws NegocioException{
+        if (d.getProfissional().getId() <= 0) {
+            throw new NegocioException("A disponibilidade deve estar vinculada a um Profissional.");
+        }
+
+        if (d.getPosto() == null || d.getPosto().getId() <= 0) {
+            throw new NegocioException("A disponibilidade deve estar vinculada a um Posto de Saúde.");
+        }
+        
+        if (d.getDiaSemana() == null) {
+            throw new NegocioException("O dia da semana é obrigatório.");
+        }
+    }
+
+    private void ValidarHorarios(Disponibilidade d) throws NegocioException {
+        if (d.getHoraInicio() == null || d.getHoraFim() == null) {
+            throw new NegocioException("Horários de início e fim são obrigatórios.");
+        }
+        
+        if (!d.getHoraInicio().isBefore(d.getHoraFim())) {
+            throw new NegocioException("Horário inválido: A hora de início (" + d.getHoraInicio() + 
+                                     ") deve ser anterior à hora de fim (" + d.getHoraFim() + ").");
         }
     }
 
