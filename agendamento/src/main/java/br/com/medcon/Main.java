@@ -26,6 +26,7 @@ public class Main {
             DisponibilidadeDAO disponibilidadeDAO = new DisponibilidadeDAO();
             AgendamentoDAO agendamentoDAO = new AgendamentoDAO();
             ProfissionalPostoDAO profissionalPostoDAO = new ProfissionalPostoDAO();
+            PostoSaudeDAO PostoDAO = new PostoSaudeDAO();
 
             PacienteBO pacienteBO = new PacienteBO(pacienteDAO);
             TipoServicoBO tipoServicoBO = new TipoServicoBO(tipoServicoDAO, especialidadeDAO);
@@ -33,6 +34,7 @@ public class Main {
             DisponibilidadeBO disponibilidadeBO = new DisponibilidadeBO(disponibilidadeDAO);
             AgendamentoBO agendamentoBO = new AgendamentoBO(agendamentoDAO);
             ProfissionalPostoBO profissionalPostoBO = new ProfissionalPostoBO(profissionalPostoDAO);
+            PostoSaudeBO postoSaudeBO = new PostoSaudeBO(PostoDAO);
 
             MenuPacienteView menuPaciente = new MenuPacienteView(
                 scanner, 

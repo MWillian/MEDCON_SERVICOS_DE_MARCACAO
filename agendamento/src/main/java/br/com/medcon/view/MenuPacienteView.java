@@ -12,6 +12,7 @@ import br.com.medcon.bo.AgendamentoBO;
 import br.com.medcon.bo.DisponibilidadeBO;
 import br.com.medcon.bo.EspecialidadeBO;
 import br.com.medcon.bo.PacienteBO;
+import br.com.medcon.bo.PostoSaudeBO;
 import br.com.medcon.bo.ProfissionalPostoBO;
 import br.com.medcon.bo.TipoServicoBO;
 import br.com.medcon.bo.exception.NegocioException;
@@ -37,7 +38,8 @@ public class MenuPacienteView {
             EspecialidadeBO especialidadeBO,
             DisponibilidadeBO disponibilidadeBO,
             AgendamentoBO agendamentoBO,
-            ProfissionalPostoBO profissionalPostoBO) {
+            ProfissionalPostoBO profissionalPostoBO,
+            PostoSaudeBO postoSaudeBO) {
         this.scanner = scanner;
         this.pacienteBO = pacienteBO;
         this.tipoServicoBO = tipoServicoBO;
