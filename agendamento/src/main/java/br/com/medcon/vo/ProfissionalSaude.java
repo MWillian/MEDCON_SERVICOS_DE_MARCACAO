@@ -23,4 +23,14 @@ public class ProfissionalSaude extends Pessoa {
     public void setTipo(CargoProfissional tipo) { this.tipo = tipo; }
     public Especialidade getEspecialidade() { return especialidade; }
     public void setEspecialidade(Especialidade especialidade) { this.especialidade = especialidade; }
+    
+    @Override
+    public String toString() {
+        return "ProfissionalSaude [registroProfissional=" + registroProfissional + ", tipo=" + tipo + ", especialidade="
+                + especialidade + ", getId()=" + getId() + ", getNome()=" + getNome() + ", getCpf()=" + getCpf()
+                + ", getDataNascimento()=" + getDataNascimento() + ", getTelefone()=" + getTelefone()
+                + ", getEndereco()=" + getEndereco() + "]";
+    }
+
+    
 }

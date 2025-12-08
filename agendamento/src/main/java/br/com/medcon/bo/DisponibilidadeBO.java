@@ -6,6 +6,7 @@ import java.util.List;
 import br.com.medcon.bo.exception.NegocioException;
 import br.com.medcon.dao.DisponibilidadeDAO;
 import br.com.medcon.vo.Disponibilidade;
+import br.com.medcon.vo.ProfissionalSaude;
 
 public class DisponibilidadeBO {
     private final DisponibilidadeDAO disponibilidadeDAO;
@@ -35,5 +36,9 @@ public class DisponibilidadeBO {
         } catch (SQLException e) {
             throw new NegocioException("Erro ao buscar a Disponibilidade.");
         }
+    }
+
+    public ProfissionalSaude buscarPorMedico(int id) throws SQLException {
+        return disponibilidadeDAO.buscaPorMedico(id);
     }
 }

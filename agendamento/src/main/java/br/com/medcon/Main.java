@@ -15,14 +15,16 @@ public class Main {
             EspecialidadeDAO especialidadeDAO = new EspecialidadeDAO();
             DisponibilidadeDAO disponibilidadeDAO = new DisponibilidadeDAO();
             AgendamentoDAO agendamentoDAO = new AgendamentoDAO();
+            ProfissionalPostoDAO profissionalPostoDAO = new ProfissionalPostoDAO();
 
             PacienteBO pacienteBO = new PacienteBO(pacienteDAO);
             TipoServicoBO tipoServicoBO = new TipoServicoBO(tipoServicoDAO,especialidadeDAO); 
             EspecialidadeBO especialidadeBO = new EspecialidadeBO(especialidadeDAO);
             DisponibilidadeBO disponibilidadeBO = new DisponibilidadeBO(disponibilidadeDAO);
             AgendamentoBO agendamentoBO = new AgendamentoBO(agendamentoDAO);
+            ProfissionalPostoBO profissionalPostoBO = new ProfissionalPostoBO(profissionalPostoDAO);
 
-            MenuPacienteView menuPaciente = new MenuPacienteView(scanner, pacienteBO, tipoServicoBO, especialidadeBO, disponibilidadeBO, agendamentoBO);
+            MenuPacienteView menuPaciente = new MenuPacienteView(scanner, pacienteBO, tipoServicoBO, especialidadeBO, disponibilidadeBO, agendamentoBO, profissionalPostoBO);
             MenuAdminView MenuAdmin = new MenuAdminView(scanner, tipoServicoBO);
             System.out.println("=== SISTEMA MEDCON ===");
             System.out.println("Selecione seu perfil:");

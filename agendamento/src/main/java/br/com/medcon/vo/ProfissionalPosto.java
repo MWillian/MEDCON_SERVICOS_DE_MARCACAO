@@ -12,8 +12,15 @@ public class ProfissionalPosto {
     }
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
+
     public ProfissionalSaude getProfissional() { return profissional; }
     public void setProfissional(ProfissionalSaude profissional) { this.profissional = profissional; }
+
     public PostoSaude getPosto() { return posto; }
     public void setPosto(PostoSaude posto) { this.posto = posto; }
+    
+    @Override
+    public String toString() {
+        return "ProfissionalPosto [id=" + id + ", profissional=" + profissional + ", posto=" + posto + "]";
+    }
 }

@@ -71,7 +71,7 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
     public Disponibilidade buscarPorId(int id) throws SQLException {
         Disponibilidade disponibilidade = null;
         String sql = "SELECT " +
-                // tb_disponibilidade
+        // tb_disponibilidade
                 "d.id AS disp_id, " +
                 "d.id_profissional AS disp_id_profissional, " +
                 "d.id_posto AS disp_id_posto, " +
@@ -84,7 +84,6 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
                 "prof.id_especialidade AS prof_id_especialidade, " +
                 "prof.registro_profissional AS prof_registro_profissional, " +
                 "prof.tipo_profissional AS prof_tipo_profissional, " +
-                
 
                 // tb_pessoa
                 "pes.id AS pes_id, " +
@@ -135,7 +134,7 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
     public List<Disponibilidade> buscarTodos() throws SQLException {
         List<Disponibilidade> lista = new ArrayList<>();
         String sql = "SELECT " +
-                // tb_disponibilidade
+        // tb_disponibilidade
                 "d.id AS disp_id, " +
                 "d.id_profissional AS disp_id_profissional, " +
                 "d.id_posto AS disp_id_posto, " +
@@ -161,7 +160,7 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
                 "esp.id AS esp_id, " +
                 "esp.nome AS esp_nome, " +
                 "esp.descricao AS esp_descricao, " +
-                
+
                 // tb_posto
                 "po.id AS posto_id, " +
                 "po.nome AS posto_nome, " +
@@ -192,13 +191,52 @@ public class DisponibilidadeDAO implements IDisponibilidadeDAO {
     }
 
     @Override
-    public Disponibilidade buscaPorMedico(int idMedico) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscaPorMedico'");
+    public ProfissionalSaude buscaPorMedico(int idMedico) throws SQLException {
+        ProfissionalSaude ps = null;
+        String sql = "SELECT " +
+                // tb_profissional
+                "prof.id_pessoa AS prof_id_pessoa, " +
+                "prof.id_especialidade AS prof_id_especialidade, " +
+                "prof.registro_profissional AS prof_registro_profissional, " +
+                "prof.tipo_profissional AS prof_tipo_profissional, " +
+
+                // tb_pessoa
+                "pes.id AS pes_id, " +
+                "pes.nome AS pes_nome, " +
+                "pes.cpf AS pes_cpf, " +
+                "pes.data_nascimento AS pes_data_nascimento, " +
+                "pes.endereco AS pes_endereco, " +
+                "pes.telefone AS pes_telefone, " +
+
+                // tb_especialidade
+                "esp.id AS esp_id, " +
+                "esp.nome AS esp_nome, " +
+                "esp.descricao AS esp_descricao, " +
+
+                "FROM tb_disponibilidade d " +
+
+                "INNER JOIN tb_pessoa pes " + 
+                "ON prof.id_pessoa = pes.id " +
+
+                "INNER JOIN tb_profissional prof " +
+                "ON d.id_profissional = prof.id_pessoa " +
+
+                "INNER JOIN tb_especialidade esp " + 
+                "ON prof.id_especialidade = esp.id " +
+
+                "WHERE d.id = ? AND prof.tipo_profissional = 'MEDICO';";
+        try (Connection conn = factory.getConexao();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet result = stmt.executeQuery()) {
+            if (result.next()) {
+                ps = montarProfissional(result);
+            }
+        }
+        return ps;
     }
 
     @Override
-    public Disponibilidade buscaPorPosto(int idMedico) throws SQLException {
+    public PostoSaude buscaPorPosto(int idMedico) throws SQLException {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'buscaPorPosto'");
     }
