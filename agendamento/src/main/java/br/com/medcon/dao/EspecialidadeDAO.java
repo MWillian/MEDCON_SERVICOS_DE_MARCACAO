@@ -1,13 +1,14 @@
 package br.com.medcon.dao;
 
-import br.com.medcon.interfaces.IEspecialidade;
-import br.com.medcon.vo.Especialidade;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import br.com.medcon.interfaces.IEspecialidade;
+import br.com.medcon.vo.Especialidade;
 
 public class EspecialidadeDAO implements IEspecialidade {
     private final ConexaoFactory factory;

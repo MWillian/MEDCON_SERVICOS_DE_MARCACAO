@@ -25,6 +25,7 @@ CREATE TABLE tb_agendamento (
     id_profissional INTEGER NOT NULL,
     id_posto INTEGER NOT NULL,
     data_hora_inicio TEXT NOT NULL,
+    data_hora_fim TEXT NOT NULL,
     status TEXT DEFAULT 'AGENDADA',
     laudo_resultado TEXT,
     FOREIGN KEY (id_paciente) REFERENCES tb_paciente(id),
