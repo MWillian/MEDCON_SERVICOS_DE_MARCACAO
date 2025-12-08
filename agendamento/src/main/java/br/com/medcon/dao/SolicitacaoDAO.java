@@ -15,6 +15,7 @@ import br.com.medcon.enums.StatusSolicitacao;
 import br.com.medcon.interfaces.ISolicitacaoDAO;
 import br.com.medcon.vo.Especialidade;
 import br.com.medcon.vo.Paciente;
+import br.com.medcon.vo.PostoSaude;
 import br.com.medcon.vo.Solicitacao;
 import br.com.medcon.vo.TipoServico;
 
@@ -28,27 +29,29 @@ public class SolicitacaoDAO implements ISolicitacaoDAO {
 
     @Override
     public void salvar(Solicitacao solicitacao) throws SQLException {
-        String sqlSolicitacao = "INSERT INTO tb_solicitacao (id_paciente, id_tipo_servico, status, prioridade) VALUES (?, ?, ?, ?);";
+        String sqlSolicitacao = "INSERT INTO tb_solicitacao (id_paciente, id_tipo_servico, id_posto_preferencia, status, prioridade) VALUES (?, ?, ?, ?, ?);";
         try (Connection conn = factory.getConexao();
                 PreparedStatement stmt = conn.prepareStatement(sqlSolicitacao)) {
             stmt.setInt(1, solicitacao.getPaciente().getId());
             stmt.setInt(2, solicitacao.getTipoServico().getId());
-            stmt.setString(3, solicitacao.getStatus().name());
-            stmt.setInt(4, solicitacao.getPrioridade().ordinal());
+            stmt.setInt(3, solicitacao.getPostoPreferencia().getId());
+            stmt.setString(4, solicitacao.getStatus().name());
+            stmt.setInt(5, solicitacao.getPrioridade().ordinal());
             stmt.execute();
         }
     }
 
     @Override
     public void atualizar(Solicitacao solicitacao) throws SQLException {
-        String sql = "UPDATE tb_solicitacao SET id_paciente= ?, id_tipo_servico=?, status=?, prioridade=? WHERE id=?;";
+        String sql = "UPDATE tb_solicitacao SET id_paciente= ?, id_tipo_servico= ? , id_posto_preferencia= ?, status= ?, prioridade= ? WHERE id= ?;";
         try (Connection conn = factory.getConexao();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, solicitacao.getPaciente().getId());
             stmt.setInt(2, solicitacao.getTipoServico().getId());
-            stmt.setString(3, solicitacao.getStatus().name());
-            stmt.setInt(4, solicitacao.getPrioridade().ordinal());
-            stmt.setInt(5, solicitacao.getId());
+            stmt.setInt(3, solicitacao.getPostoPreferencia().getId());
+            stmt.setString(4, solicitacao.getStatus().name());
+            stmt.setInt(5, solicitacao.getPrioridade().ordinal());
+            stmt.setInt(6, solicitacao.getId());
             stmt.execute();
         }
     }
@@ -66,8 +69,11 @@ public class SolicitacaoDAO implements ISolicitacaoDAO {
     @Override
     public Solicitacao buscarPorId(int id) throws SQLException {
         Solicitacao solicitacao = null;
-        String sql = "SELECT tb_solicitacao.*, tb_paciente.*, tb_tipo_servico.*, tb_pessoa.*, tb_especialidade.* "
+        String sql = "SELECT tb_solicitacao.*, tb_posto.*, tb_paciente.*, tb_tipo_servico.*, tb_pessoa.*, tb_especialidade.* "
                 + "FROM tb_solicitacao "
+
+                + "INNER JOIN tb_posto "
+                + "ON tb_solicitacao.id_posto_preferencia = tb_posto.id "
 
                 + "INNER JOIN tb_paciente "
                 + "ON tb_solicitacao.id_paciente = tb_paciente.id_pessoa "
@@ -97,8 +103,11 @@ public class SolicitacaoDAO implements ISolicitacaoDAO {
     @Override
     public List<Solicitacao> buscarTodos() throws SQLException {
         List<Solicitacao> solicitacoes = new ArrayList<>();
-        String sql = "SELECT tb_solicitacao.*, tb_paciente.*, tb_tipo_servico.*, tb_pessoa.*, tb_especialidade.* "
+        String sql = "SELECT tb_solicitacao.*, tb_posto.*, tb_paciente.*, tb_tipo_servico.*, tb_pessoa.*, tb_especialidade.* "
                 + "FROM tb_solicitacao "
+
+                + "INNER JOIN tb_posto "
+                + "ON tb_solicitacao.id_posto_preferencia = tb_posto.id "
 
                 + "INNER JOIN tb_paciente "
                 + "ON tb_solicitacao.id_paciente = tb_paciente.id_pessoa "
@@ -125,8 +134,11 @@ public class SolicitacaoDAO implements ISolicitacaoDAO {
     @Override
     public List<Solicitacao> listarPendentesPorPrioridade(int codigo) throws SQLException {
         List<Solicitacao> solicitacoes = new ArrayList<>();
-        String sql = "SELECT tb_solicitacao.*, tb_paciente.*, tb_tipo_servico.*, tb_pessoa.*, tb_especialidade.* "
+        String sql = "SELECT tb_solicitacao.*, tb_posto.*, tb_paciente.*, tb_tipo_servico.*, tb_pessoa.*, tb_especialidade.* "
                 + "FROM tb_solicitacao "
+
+                + "INNER JOIN tb_posto "
+                + "ON tb_solicitacao.id_posto_preferencia = tb_posto.id "
 
                 + "INNER JOIN tb_paciente "
                 + "ON tb_solicitacao.id_paciente = tb_paciente.id_pessoa "
@@ -165,6 +177,7 @@ public class SolicitacaoDAO implements ISolicitacaoDAO {
         solicitacao.setPaciente(montarPaciente(rs));
         solicitacao.setTipoServico(tipoServico);
         solicitacao.setDataSolicitacao(LocalDateTime.parse(rs.getString("data_solicitacao"), formato));
+        solicitacao.setPostoPreferencia(montarPosto(rs));
         solicitacao.setPrioridade(Prioridade.fromCodigo(rs.getInt("prioridade")));
         solicitacao.setStatus(StatusSolicitacao.valueOf(rs.getString("status")));
         return solicitacao;
@@ -200,5 +213,16 @@ public class SolicitacaoDAO implements ISolicitacaoDAO {
                 result.getString("nome"),
                 result.getString("descricao"));
         return especialidade;
+    }
+
+    private PostoSaude montarPosto(ResultSet result) throws SQLException {
+        PostoSaude postoSaude = new PostoSaude(
+                result.getInt("id"),
+                result.getString("nome"),
+                result.getString("endereco"),
+                result.getString("telefone")
+        );
+
+        return postoSaude;
     }
 }

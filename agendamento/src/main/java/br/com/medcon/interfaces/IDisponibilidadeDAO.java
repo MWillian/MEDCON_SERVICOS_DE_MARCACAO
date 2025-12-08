@@ -16,7 +16,9 @@ public interface IDisponibilidadeDAO {
 
     List<Disponibilidade>buscarTodos() throws SQLException;
 
-    Disponibilidade buscaPorMedico(int idMedico) throws SQLException;
+    List<Disponibilidade> buscarPorMedico(int idMedico) throws SQLException;
 
-    Disponibilidade buscaPorPosto(int idMedico) throws SQLException;
+    List<Disponibilidade> buscarPorPosto(int idMedico) throws SQLException;
+
+    List<Disponibilidade> buscarPorEspecialidade(int idEspecialidade) throws SQLException;
 }

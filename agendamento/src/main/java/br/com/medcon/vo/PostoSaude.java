@@ -20,4 +20,10 @@ public class PostoSaude {
     public void setEndereco(String endereco) { this.endereco = endereco; }
     public String getTelefone() {return telefone;}
     public void setTelefone(String telefone) { this.telefone = telefone; }
+    @Override
+    public String toString() {
+        return "PostoSaude [id=" + id + ", nome=" + nome + ", endereco=" + endereco + ", telefone=" + telefone + "]";
+    }
+
+    
 }
