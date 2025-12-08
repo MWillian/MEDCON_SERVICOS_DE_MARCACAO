@@ -8,6 +8,7 @@ import br.com.medcon.bo.EspecialidadeBO;
 import br.com.medcon.bo.PacienteBO;
 import br.com.medcon.bo.PostoSaudeBO;
 import br.com.medcon.bo.ProfissionalPostoBO;
+import br.com.medcon.bo.ProfissionalSaudeBO;
 import br.com.medcon.bo.TipoServicoBO;
 import br.com.medcon.dao.AgendamentoDAO;
 import br.com.medcon.dao.DisponibilidadeDAO;
@@ -15,6 +16,7 @@ import br.com.medcon.dao.EspecialidadeDAO;
 import br.com.medcon.dao.PacienteDAO;
 import br.com.medcon.dao.PostoSaudeDAO;
 import br.com.medcon.dao.ProfissionalPostoDAO;
+import br.com.medcon.dao.ProfissionalSaudeDAO;
 import br.com.medcon.dao.TipoServicoDAO;
 import br.com.medcon.view.MenuAdminView;
 import br.com.medcon.view.MenuPacienteView;
@@ -30,6 +32,7 @@ public class Main {
             AgendamentoDAO agendamentoDAO = new AgendamentoDAO();
             ProfissionalPostoDAO profissionalPostoDAO = new ProfissionalPostoDAO();
             PostoSaudeDAO PostoDAO = new PostoSaudeDAO();
+            ProfissionalSaudeDAO profissionalSaudeDAO = new ProfissionalSaudeDAO();
 
             PacienteBO pacienteBO = new PacienteBO(pacienteDAO);
             TipoServicoBO tipoServicoBO = new TipoServicoBO(tipoServicoDAO, especialidadeDAO);
@@ -38,6 +41,7 @@ public class Main {
             AgendamentoBO agendamentoBO = new AgendamentoBO(agendamentoDAO);
             ProfissionalPostoBO profissionalPostoBO = new ProfissionalPostoBO(profissionalPostoDAO);
             PostoSaudeBO postoSaudeBO = new PostoSaudeBO(PostoDAO);
+            ProfissionalSaudeBO profissionalSaudeBO = new ProfissionalSaudeBO(profissionalSaudeDAO,especialidadeDAO);
 
             MenuPacienteView menuPaciente = new MenuPacienteView(
                 scanner, 
@@ -50,7 +54,14 @@ public class Main {
                 postoSaudeBO
             );
             
-            MenuAdminView menuAdmin = new MenuAdminView(scanner, tipoServicoBO );
+            MenuAdminView menuAdmin = new MenuAdminView(
+                scanner, 
+                tipoServicoBO, 
+                especialidadeBO, 
+                postoSaudeBO, 
+                profissionalSaudeBO, 
+                disponibilidadeBO
+            );
 
             boolean rodando = true;
             while (rodando) {
