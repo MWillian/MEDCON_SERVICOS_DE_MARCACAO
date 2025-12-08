@@ -1,4 +1,7 @@
 package br.com.medcon.view;
+import br.com.medcon.vo.*;
+import br.com.medcon.bo.*;
+import br.com.medcon.bo.exception.*;
 
 import br.com.medcon.bo.AgendamentoBO;
 import br.com.medcon.bo.DisponibilidadeBO;
@@ -130,7 +133,7 @@ public class MenuPacienteView {
     }
 
     private void exibirMenuLogado() {
-        while (true) {
+        while (pacienteLogado != null) {
             System.out.println("\n--- OLÁ, " + pacienteLogado.getNome().toUpperCase() + " ---");
             System.out.println("1. Nova Solicitação de Agendamento");
             System.out.println("2. Meus Agendamentos (Futuro)");

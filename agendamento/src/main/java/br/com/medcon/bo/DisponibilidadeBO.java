@@ -1,5 +1,4 @@
 package br.com.medcon.bo;
-
 import java.sql.SQLException;
 import java.util.List;
 
@@ -16,6 +15,8 @@ public class DisponibilidadeBO {
     }
 
     public void salvar(Disponibilidade disponibilidade) throws NegocioException, SQLException {
+        ValidarCamposObrigatorios(disponibilidade);
+        ValidarHorarios(disponibilidade);
         disponibilidadeDAO.salvar(disponibilidade);
     }
 
@@ -23,14 +24,13 @@ public class DisponibilidadeBO {
         return disponibilidadeDAO.buscarTodos();
     }
 
-    public Disponibilidade buscarPorId(int id) throws NegocioException {
+    public Disponibilidade buscarPorId(int id) throws NegocioException, SQLException {
         try {
             Disponibilidade esp = disponibilidadeDAO.buscarPorId(id);
 
             if (esp == null) {
                 throw new NegocioException("Disponibilidade com ID " + id + " não encontrada.");
             }
-
             return esp;
 
         } catch (SQLException e) {

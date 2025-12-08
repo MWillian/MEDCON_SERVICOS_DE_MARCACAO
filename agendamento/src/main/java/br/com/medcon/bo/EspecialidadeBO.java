@@ -15,21 +15,8 @@ public class EspecialidadeBO {
     }
 
     public void salvar(Especialidade especialidade) throws NegocioException, SQLException {
-        // VALIDAÇÃO DE NOME
-        if (especialidade.getNome() == null || especialidade.getNome().trim().length() < 3) {
-            throw new NegocioException("O nome da especialidade é obrigatório e deve ter ao menos 3 caracteres.");
-        }
-        if (especialidade.getDescricao() == null || especialidade.getDescricao().trim().length() < 10) {
-            throw new NegocioException("A descriçao da especidade deve ser de no mínimo 10 caracteres.");
-        }
-
-        // VALIDAÇÃO SE A ESPECIALIDADE JÁ EXISTE NO BANCO
-        List<Especialidade> especialidadesNoBanco = listarTodos();
-        for (Especialidade esp : especialidadesNoBanco) {
-            if (esp.getNome().toUpperCase().equals(especialidade.getNome().toUpperCase())) {
-                throw new NegocioException("Essa especialidade já está cadastro no banco de dados.");
-            }
-        }
+        ValidarCamposObrigatorios(especialidade);
+        ValidarUnicidade(especialidade);
         especialidadeDAO.salvar(especialidade);
     }
 
@@ -37,22 +24,32 @@ public class EspecialidadeBO {
         return especialidadeDAO.listarTodos();
     }
 
-    public Especialidade buscarPorId(int id) throws NegocioException {
-        try {
-            Especialidade esp = especialidadeDAO.buscarPorId(id);
+    public Especialidade buscarPorId(int id) throws NegocioException,SQLException {
+        Especialidade esp = especialidadeDAO.buscarPorId(id);
 
-            if (esp == null) {
-                throw new NegocioException("Especialidade com ID " + id + " não encontrada.");
-            }
-
-            return esp;
-
-        } catch (SQLException e) {
-            throw new NegocioException("Erro ao buscar a especialidade.");
+        if (esp == null) {
+            throw new NegocioException("Especialidade com ID " + id + " não encontrada.");
         }
+        return esp;
     }
 
     public Especialidade buscarPorNome(String nome) throws SQLException {
         return especialidadeDAO.buscarPorNome(nome);
+    }
+
+    private void ValidarCamposObrigatorios(Especialidade especialidade) throws NegocioException {
+        if (especialidade.getNome() == null || especialidade.getNome().trim().length() < 3) {
+            throw new NegocioException("O nome da especialidade é obrigatório e deve ter ao menos 3 caracteres.");
+        }
+        if (especialidade.getDescricao() == null || especialidade.getDescricao().trim().length() < 10) {
+            throw new NegocioException("A descriçao da especidade deve ser de no mínimo 10 caracteres.");
+        }
+    }
+
+    private void ValidarUnicidade(Especialidade especialidade) throws NegocioException, SQLException {
+        Especialidade existente = especialidadeDAO.buscarPorNome(especialidade.getNome());
+        if (existente != null) {
+            throw new NegocioException("Essa especialidade já está cadastrada no banco de dados.");
+        }
     }
 }
