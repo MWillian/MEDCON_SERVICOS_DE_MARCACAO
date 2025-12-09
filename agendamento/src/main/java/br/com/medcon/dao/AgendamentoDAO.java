@@ -31,7 +31,7 @@ public class AgendamentoDAO implements IDAO<Agendamento> {
     public void salvar(Agendamento objeto) throws SQLException {
         String sql = """
                 INSERT INTO tb_agendamento
-                (id_paciente, id_profissional, id_posto, data_hora_inicio, status, laudo_resultado)
+                (id_paciente, id_profissional, id_posto, data_hora_inicio, data_hora_fim, status, laudo_resultado)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
 

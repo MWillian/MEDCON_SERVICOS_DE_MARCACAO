@@ -1,6 +1,4 @@
 package br.com.medcon.dao;
-import br.com.medcon.interfaces.IDAO;
-import br.com.medcon.vo.Paciente;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,6 +7,9 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import br.com.medcon.interfaces.IDAO;
+import br.com.medcon.vo.Paciente;
 
 public class PacienteDAO implements IDAO<Paciente> {
     private final ConexaoFactory factory;
@@ -172,5 +173,33 @@ public class PacienteDAO implements IDAO<Paciente> {
         p.setEndereco(result.getString("endereco"));
         p.setCartaoSus(result.getString("cartao_sus"));
         return p;
+    }
+
+    public int buscarIdPessoaPorCpf(String cpf) throws SQLException {
+        String sql = "SELECT id FROM tb_pessoa WHERE cpf = ?";
+        try (Connection conn = factory.getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, cpf);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id"); 
+                }
+            }
+        }
+        return -1; 
+    }
+
+    public void salvarApenasVinculo(Paciente paciente) throws SQLException {
+        String sql = "INSERT INTO tb_paciente (id_pessoa, cartao_sus) VALUES (?, ?)";
+        
+        try (Connection conn = factory.getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, paciente.getId());
+            stmt.setString(2, paciente.getCartaoSus());
+            
+            stmt.execute();
+        }
     }
 }

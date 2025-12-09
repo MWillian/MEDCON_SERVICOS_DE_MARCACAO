@@ -206,7 +206,7 @@ public class MenuPacienteView {
                     ag.setLaudo("Aguardando atendimento");
 
                     agendamentoBO.salvar(ag, servicoSelecionado.getDuracaoMinutos());
-                    System.out.println("✅ Agendamento realizado com sucesso!");
+                    System.out.println("Agendamento realizado com sucesso!");
                 } else {
                     System.out.println("Operação cancelada.");
                 }
@@ -235,7 +235,7 @@ public class MenuPacienteView {
                 d.getId(),
                 d.getPosto().getNome(),
                 d.getProfissional().getNome(),
-                d.getDiaSemana(),
+                traduzirDiaSemana(d.getDiaSemana()),
                 d.getHoraInicio(),
                 d.getHoraFim()
             );
@@ -261,4 +261,16 @@ public class MenuPacienteView {
         System.out.println("SUS: " + pacienteLogado.getCartaoSus());
         System.out.println("Telefone: " + pacienteLogado.getTelefone());
     }
+
+    private String traduzirDiaSemana(java.time.DayOfWeek dia) {
+    return switch (dia) {
+        case MONDAY -> "Segunda-feira";
+        case TUESDAY -> "Terça-feira";
+        case WEDNESDAY -> "Quarta-feira";
+        case THURSDAY -> "Quinta-feira";
+        case FRIDAY -> "Sexta-feira";
+        case SATURDAY -> "Sábado";
+        case SUNDAY -> "Domingo";
+    };
+}
 }
