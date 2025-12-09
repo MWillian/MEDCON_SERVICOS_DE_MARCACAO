@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 import br.com.medcon.bo.DisponibilidadeBO;
@@ -43,6 +44,9 @@ public class MenuAdminView {
     }
 
     public void iniciar() {
+        if (!fazerLoginAdmin()) {
+            return; 
+        }
         while (true) {
             System.out.println("\n=== ÁREA ADMINISTRATIVA ===");
             System.out.println("1. Gerenciar Especialidades");
@@ -87,6 +91,22 @@ public class MenuAdminView {
             especialidadeBO.salvar(e);
             System.out.println("Especialidade salva!");
         }
+    }
+
+    private boolean fazerLoginAdmin() {
+        System.out.println("\n--- LOGIN ADMINISTRADOR ---");
+        System.out.print("Digite seu CPF (apenas números): ");
+        String cpf = scanner.nextLine();
+        System.out.print("Senha: ");
+        String senha = scanner.nextLine(); 
+
+        if (cpf.equals("12345678900") && senha.equals("admin123")) {
+            System.out.println("Administrador logado com sucesso.");
+            return true;
+        }
+        
+        System.out.println("Credenciais de administrador inválidas.");
+        return false;
     }
 
     private void menuServico() throws SQLException, NegocioException {
@@ -183,29 +203,51 @@ public class MenuAdminView {
         }
     }
 
-    private void cadastrarDisponibilidade() throws SQLException, NegocioException {
-        System.out.println("\n--- NOVA GRADE HORÁRIA ---");
-        
-        System.out.println("Selecione o Profissional:");
+   private void cadastrarDisponibilidade() throws SQLException, NegocioException {
+    System.out.println("\n--- NOVA GRADE HORÁRIA ---");
+
+    try {
+        System.out.println("\nSelecione o Profissional:");
         profissionalSaudeBO.listarTodos().forEach(p -> System.out.printf("[%d] %s\n", p.getId(), p.getNome()));
+        System.out.println("[0] - Voltar");
         System.out.print("> ID: "); 
-        int idProf = Integer.parseInt(scanner.nextLine());
+        String entradaProf = scanner.nextLine();
+        if (entradaProf.equals("0")) return;
+        
+        int idProf = Integer.parseInt(entradaProf);
         ProfissionalSaude prof = profissionalSaudeBO.buscarPorId(idProf);
 
-        System.out.println("Selecione o Posto:");
+        System.out.println("\nSelecione o Posto:");
         postoSaudeBO.listarTodos().forEach(p -> System.out.printf("[%d] %s\n", p.getId(), p.getNome()));
+        System.out.println("[0] - Voltar");
         System.out.print("> ID: "); 
-        int idPosto = Integer.parseInt(scanner.nextLine());
+        String entradaPosto = scanner.nextLine();
+
+        if (entradaPosto.equals("0")) return;
+        int idPosto = Integer.parseInt(entradaPosto);
         PostoSaude posto = postoSaudeBO.buscarPorId(idPosto);
 
-        System.out.println("Dia da Semana (1-SEGUNDA ... 7-DOMINGO): ");
-        int dia = Integer.parseInt(scanner.nextLine());
-        DayOfWeek diaSemana = DayOfWeek.of(dia); 
+        System.out.println("\nSelecione o Dia da Semana:");
+        for (int i = 1; i <= 7; i++) {
+            DayOfWeek dia = DayOfWeek.of(i);
+            System.out.printf("[%d] - %s\n", i, traduzirDiaSemana(dia));
+        }
 
-        System.out.print("Hora Início (HH:mm): ");
+        System.out.println("[0] - Voltar");
+        System.out.print("> Opção (1-7): ");
+        String entradaDia = scanner.nextLine();
+        if (entradaDia.equals("0")) return;
+        int dia = Integer.parseInt(entradaDia);
+        
+        if (dia < 1 || dia > 7) {
+            throw new NegocioException("Dia da semana inválido. Use 1 a 7.");
+        }
+        DayOfWeek diaSemana = DayOfWeek.of(dia);
+
+        System.out.print("Hora Início (HH:mm, ex: 08:00): ");
         LocalTime inicio = LocalTime.parse(scanner.nextLine());
 
-        System.out.print("Hora Fim (HH:mm): ");
+        System.out.print("Hora Fim (HH:mm, ex: 12:00): ");
         LocalTime fim = LocalTime.parse(scanner.nextLine());
 
         Disponibilidade d = new Disponibilidade();
@@ -217,5 +259,23 @@ public class MenuAdminView {
 
         disponibilidadeBO.salvar(d);
         System.out.println("Grade cadastrada com sucesso!");
+
+    } catch (NumberFormatException e) {
+        System.out.println("Erro de input: Por favor, digite apenas números inteiros.");
+    } catch (DateTimeParseException e) {
+        System.out.println("Erro de formato de hora: Use o formato HH:mm (ex: 08:00).");
     }
+}
+
+    private String traduzirDiaSemana(java.time.DayOfWeek dia) {
+    return switch (dia) {
+        case MONDAY -> "Segunda-feira";
+        case TUESDAY -> "Terça-feira";
+        case WEDNESDAY -> "Quarta-feira";
+        case THURSDAY -> "Quinta-feira";
+        case FRIDAY -> "Sexta-feira";
+        case SATURDAY -> "Sábado";
+        case SUNDAY -> "Domingo";
+    };
+}
 }

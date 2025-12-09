@@ -1,7 +1,4 @@
 package br.com.medcon.dao;
-import br.com.medcon.vo.ProfissionalSaude;
-import br.com.medcon.vo.Especialidade;
-import br.com.medcon.enums.CargoProfissional;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,7 +8,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.medcon.enums.CargoProfissional;
 import br.com.medcon.interfaces.IDAO;
+import br.com.medcon.vo.Especialidade;
+import br.com.medcon.vo.ProfissionalSaude;
 
 public class ProfissionalSaudeDAO implements IDAO<ProfissionalSaude> {
     private final ConexaoFactory factory;
@@ -125,6 +125,25 @@ public class ProfissionalSaudeDAO implements IDAO<ProfissionalSaude> {
         return profissional;
     }
 
+    public ProfissionalSaude buscarPorCpf(String cpf) throws SQLException {
+        String sql = "SELECT prof.*" +
+                     "FROM tb_profissional prof " +
+                     "JOIN tb_pessoa p ON p.id = prof.id_pessoa " +
+                     "JOIN tb_especialidade e ON prof.id_especialidade = e.id " +
+                     "WHERE p.cpf = ?";
+        ProfissionalSaude profissional = null;
+        try (Connection conn = factory.getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, cpf);
+            try (ResultSet result = stmt.executeQuery()) {
+                if (result.next()) {
+                    profissional = montarObjeto(result);
+                }
+            }
+        }
+        return profissional;
+    }
+
     @Override
     public List<ProfissionalSaude> listarTodos() throws SQLException {
         String sql = "SELECT p.*, prof.registro_profissional, prof.tipo_profissional, " +
@@ -162,5 +181,32 @@ public class ProfissionalSaudeDAO implements IDAO<ProfissionalSaude> {
         esp.setDescricao(result.getString("desc_esp"));
         p.setEspecialidade(esp);
         return p;
+    }
+
+    public int buscarIdPessoaPorCpf(String cpf) throws SQLException {
+        String sql = "SELECT id FROM tb_pessoa WHERE cpf = ?";
+        try (Connection conn = factory.getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, cpf);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getInt("id");
+            }
+        }
+        return -1;
+    }
+
+    public void salvarApenasVinculo(ProfissionalSaude profissional) throws SQLException {
+        String sql = "INSERT INTO tb_profissional (id_pessoa, registro_profissional, tipo_profissional, id_especialidade) VALUES (?, ?, ?, ?)";
+        
+        try (Connection conn = factory.getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, profissional.getId());
+            stmt.setString(2, profissional.getRegistroProfissional());
+            stmt.setString(3, profissional.getTipo().name());
+            stmt.setInt(4, profissional.getEspecialidade().getId());
+            
+            stmt.execute();
+        }
     }
 }

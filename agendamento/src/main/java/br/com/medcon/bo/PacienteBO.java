@@ -1,9 +1,10 @@
 package br.com.medcon.bo;
-import br.com.medcon.dao.PacienteDAO;
-import br.com.medcon.bo.exception.NegocioException;
-import br.com.medcon.vo.Paciente;
 import java.sql.SQLException;
 import java.time.LocalDate;
+
+import br.com.medcon.bo.exception.NegocioException;
+import br.com.medcon.dao.PacienteDAO;
+import br.com.medcon.vo.Paciente;
 
 public class PacienteBO {
     private final PacienteDAO dao;
@@ -45,6 +46,9 @@ public class PacienteBO {
         if (nome == null || nome.trim().length() < 3) {
             throw new NegocioException("Nome do paciente inválido: deve conter ao menos 3 letras.");
         }
+        if (nome != null && nome.matches(".*\\d.*")) {
+        throw new NegocioException("O nome do paciente não pode conter números. Digite apenas letras.");
+    }
     }
 
     private void ValidarCpf(String cpfLimpo) throws NegocioException {
@@ -92,6 +96,22 @@ public class PacienteBO {
         if (foneLimpo == null) return; 
         if (foneLimpo.length() < 10 || foneLimpo.length() > 11) {
             throw new NegocioException("Telefone inválido: Deve conter DDD + Número (10 ou 11 dígitos).");
+        }
+    }
+
+    private void processarSalvamento(Paciente p) throws NegocioException, SQLException {
+        Paciente pacienteExistente = dao.buscarPorCpf(p.getCpf());
+        if (pacienteExistente != null) {
+            throw new NegocioException("Este CPF já está cadastrado como PACIENTE.");
+        }
+
+        int idPessoaExistente = dao.buscarIdPessoaPorCpf(p.getCpf());
+
+        if (idPessoaExistente > 0) {
+            p.setId(idPessoaExistente); 
+            dao.salvarApenasVinculo(p);
+        } else {
+            dao.salvar(p);
         }
     }
 }

@@ -24,6 +24,20 @@ public class ProfissionalSaudeBO {
         ValidarRegistro(profissional);
         ValidarEspecialidade(profissional);
 
+        ProfissionalSaude existente = dao.buscarPorCpf(profissional.getCpf());
+        if (existente != null) {
+            throw new NegocioException("Este CPF já está cadastrado como Profissional.");
+        }
+        int idPessoaExistente = dao.buscarIdPessoaPorCpf(profissional.getCpf());
+
+        if (idPessoaExistente > 0) {
+            profissional.setId( idPessoaExistente);
+            dao.salvarApenasVinculo(profissional);
+            
+        } else {
+            dao.salvar(profissional);
+        }
+
         dao.salvar(profissional);
     }
 
