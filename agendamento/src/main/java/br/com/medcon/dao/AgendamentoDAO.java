@@ -32,7 +32,7 @@ public class AgendamentoDAO implements IDAO<Agendamento> {
         String sql = """
                 INSERT INTO tb_agendamento
                 (id_paciente, id_profissional, id_posto, data_hora_inicio, status, laudo_resultado)
-                VALUES (?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (Connection conn = factory.getConexao();
