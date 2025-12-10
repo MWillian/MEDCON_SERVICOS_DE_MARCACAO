@@ -5,21 +5,23 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.medcon.enums.CargoProfissional;
 import br.com.medcon.enums.StatusAgendamento;
-import br.com.medcon.interfaces.IDAO;
+import br.com.medcon.interfaces.IAgendamentoDAO;
 import br.com.medcon.vo.Agendamento;
 import br.com.medcon.vo.Especialidade;
 import br.com.medcon.vo.Paciente;
 import br.com.medcon.vo.PostoSaude;
 import br.com.medcon.vo.ProfissionalSaude;
 
-public class AgendamentoDAO implements IDAO<Agendamento> {
+public class AgendamentoDAO implements IAgendamentoDAO {
 
     private final ConexaoFactory factory;
 
@@ -97,7 +99,7 @@ public class AgendamentoDAO implements IDAO<Agendamento> {
                 "    ag.id_profissional AS ag_id_profissional, " +
                 "    ag.id_posto AS ag_id_posto, " +
                 "    ag.data_hora_inicio AS ag_data_hora_inicio, " +
-                // "    ag.data_hora_fim AS ag_data_hora_fim, " +
+                "    ag.data_hora_fim AS ag_data_hora_fim, " +
                 "    ag.status AS ag_status, " +
                 "    ag.laudo_resultado AS ag_laudo, " +
                 // tb_paciente
@@ -169,6 +171,86 @@ public class AgendamentoDAO implements IDAO<Agendamento> {
         return null;
     }
 
+        @Override
+        public List<Agendamento> buscarAgendamentosPorPaciente(int idPaciente) throws SQLException {
+        String sql = "SELECT " +
+                "    ag.id AS ag_id, " +
+                "    ag.id_paciente AS ag_id_paciente, " +
+                "    ag.id_profissional AS ag_id_profissional, " +
+                "    ag.id_posto AS ag_id_posto, " +
+                "    ag.data_hora_inicio AS ag_data_hora_inicio, " +
+                "    ag.data_hora_fim AS ag_data_hora_fim, " +
+                "    ag.status AS ag_status, " +
+                "    ag.laudo_resultado AS ag_laudo, " +
+
+                "    pac.id_pessoa AS pac_id_pessoa, " +
+                "    pac.cartao_sus AS pac_cartao_sus, " +
+
+                "    pes_pac.id AS pes_pac_id, " +
+                "    pes_pac.nome AS pes_pac_nome, " +
+                "    pes_pac.cpf AS pes_pac_cpf, " +
+                "    pes_pac.data_nascimento AS pes_pac_data_nascimento, " +
+                "    pes_pac.telefone AS pes_pac_telefone, " +
+                "    pes_pac.endereco AS pes_pac_endereco, " +
+
+                "    prof.id_pessoa AS prof_id_pessoa, " +
+                "    prof.registro_profissional AS prof_registro_profissional, " +
+                "    prof.tipo_profissional AS prof_tipo_profissional, " +
+                "    prof.id_especialidade AS prof_id_especialidade, " +
+
+                "    pes_prof.id AS pes_prof_id, " +
+                "    pes_prof.nome AS pes_prof_nome, " +
+                "    pes_prof.cpf AS pes_prof_cpf, " +
+                "    pes_prof.data_nascimento AS pes_prof_data_nascimento, " +
+                "    pes_prof.telefone AS pes_prof_telefone, " +
+                "    pes_prof.endereco AS pes_prof_endereco, " +
+
+                "    esp.id AS esp_id, " +
+                "    esp.nome AS esp_nome, " +
+                "    esp.descricao AS esp_descricao, " +
+
+                "    posto.id AS posto_id, " +
+                "    posto.nome AS posto_nome, " +
+                "    posto.endereco AS posto_endereco, " +
+                "    posto.telefone AS posto_telefone " +
+
+                "FROM tb_agendamento ag " +
+
+                "INNER JOIN tb_paciente pac " +
+                "    ON ag.id_paciente = pac.id_pessoa " +
+
+                "INNER JOIN tb_pessoa pes_pac " +
+                "    ON pac.id_pessoa = pes_pac.id " +
+
+                "INNER JOIN tb_profissional prof " +
+                "    ON ag.id_profissional = prof.id_pessoa " +
+
+                "INNER JOIN tb_pessoa pes_prof " +
+                "    ON prof.id_pessoa = pes_prof.id " +
+
+                "INNER JOIN tb_especialidade esp " +
+                "    ON prof.id_especialidade = esp.id " +
+
+                "INNER JOIN tb_posto posto " +
+                "    ON ag.id_posto = posto.id " +
+
+                "WHERE ag.id_paciente = ?";
+
+        List<Agendamento> lista = new ArrayList<>();
+        try (Connection conn = factory.getConexao();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idPaciente);
+
+            try (ResultSet result = stmt.executeQuery()) {
+                while (result.next()) {
+                    lista.add(montarAgendamento(result));
+                }
+            }
+        }
+        return lista;
+    }
+
     @Override
     public List<Agendamento> listarTodos() throws SQLException {
         String sql = "SELECT " +
@@ -177,6 +259,7 @@ public class AgendamentoDAO implements IDAO<Agendamento> {
                 "    ag.id_profissional AS ag_id_profissional, " +
                 "    ag.id_posto AS ag_id_posto, " +
                 "    ag.data_hora_inicio AS ag_data_hora_inicio, " +
+                "    ag.data_hora_fim AS ag_data_hora_fim, " +
                 "    ag.status AS ag_status, " +
                 "    ag.laudo_resultado AS ag_laudo, " +
 
@@ -272,7 +355,13 @@ public class AgendamentoDAO implements IDAO<Agendamento> {
         ag.setPaciente(montarPaciente(rs));
         ag.setProfissional(montarProfissional(rs));
         ag.setPosto(montarPostoSaude(rs));
-        ag.setDataHoraInicio(rs.getTimestamp("ag_data_hora_inicio").toLocalDateTime());
+
+        Instant hora_inicio = Instant.ofEpochMilli(Long.parseLong(rs.getString("ag_data_hora_inicio")));
+        ag.setDataHoraInicio(LocalDateTime.ofInstant(hora_inicio, ZoneId.systemDefault()));
+
+        Instant hora_fim = Instant.ofEpochMilli(Long.parseLong(rs.getString("ag_data_hora_fim")));
+        ag.setDataHoraFim(LocalDateTime.ofInstant(hora_fim, ZoneId.systemDefault()));
+
         ag.setStatus(StatusAgendamento.valueOf(rs.getString("ag_status")));
         ag.setLaudo(rs.getString("ag_laudo"));
 

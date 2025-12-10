@@ -90,4 +90,14 @@ public class AgendamentoBO {
 
         return agendamento;
     }
+
+    public List<Agendamento> buscarAgendamentosPorPaciente(int idPaciente) throws NegocioException, SQLException {
+        List<Agendamento> agendamento = agendamentoDAO.buscarAgendamentosPorPaciente(idPaciente);
+
+        if (agendamento == null) {
+            throw new NegocioException("Nenhum Agendamento encontrado.");
+        }
+
+        return agendamento;
+    }
 }

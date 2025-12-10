@@ -255,8 +255,35 @@ public class MenuPacienteView {
         return data;
     }
 
-    private void exibirAgendamentos() {
+    private void exibirAgendamentos() throws NegocioException{
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        List<Agendamento> agendamentosDoPaciente;
+        try {
+            agendamentosDoPaciente = agendamentoBO.buscarAgendamentosPorPaciente(pacienteLogado.getId());
+            
+            for (Agendamento ag : agendamentosDoPaciente) {
+                LocalDate data = ag.getDataHoraInicio().toLocalDate();
+                LocalTime hora_incio = ag.getDataHoraInicio().toLocalTime();
+                LocalTime hora_fim = ag.getDataHoraFim().toLocalTime();
 
+                System.out.printf("[%d] - Paciente: %s | Médico: Dr. %s | Posto: %s | Data: %s | Horário: %s às %s | Status: %s | Laudo: %s\n",
+                    ag.getId(),
+                    ag.getPaciente().getNome(),
+                    ag.getProfissional().getNome(),
+                    ag.getPosto().getNome(),
+                    //ag.getPosto().getEndereco(),
+                    //ag.getPosto().getTelefone(),
+                    data.format(formato),
+                    hora_incio,
+                    hora_fim,
+                    ag.getStatus().toString(),
+                    ag.getLaudo()
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
     }
 
     private void mostrarDados() {
