@@ -94,7 +94,7 @@ public class AgendamentoBO {
     public List<Agendamento> buscarAgendamentosPorPaciente(int idPaciente) throws NegocioException, SQLException {
         List<Agendamento> agendamento = agendamentoDAO.buscarAgendamentosPorPaciente(idPaciente);
 
-        if (agendamento == null) {
+        if (agendamento.size() == 0) {
             throw new NegocioException("Nenhum Agendamento encontrado.");
         }
 

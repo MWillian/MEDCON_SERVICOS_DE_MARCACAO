@@ -256,6 +256,8 @@ public class MenuPacienteView {
     }
 
     private void exibirAgendamentos() throws NegocioException{
+        System.out.println("\n=== AGENDAMENTOS ===");
+
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         List<Agendamento> agendamentosDoPaciente;
         try {
@@ -282,6 +284,8 @@ public class MenuPacienteView {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (NegocioException e) {
+            System.out.println(e.getMessage());
         }
         
     }
