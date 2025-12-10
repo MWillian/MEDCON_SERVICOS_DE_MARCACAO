@@ -141,6 +141,7 @@ public class MenuPacienteView {
 
             switch (opcao) {
                 case "1" -> novaSolicitacao();
+                case "2" -> exibirAgendamentos();
                 case "3" -> mostrarDados();
                 case "0" -> {
                     this.pacienteLogado = null;
@@ -253,7 +254,11 @@ public class MenuPacienteView {
         }
         return data;
     }
-    
+
+    private void exibirAgendamentos() {
+
+    }
+
     private void mostrarDados() {
         System.out.println("\n--- MEUS DADOS ---");
         System.out.println("Nome: " + pacienteLogado.getNome());
