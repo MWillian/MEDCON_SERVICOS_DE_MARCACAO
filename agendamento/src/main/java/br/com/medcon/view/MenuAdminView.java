@@ -29,12 +29,13 @@ public class MenuAdminView {
     private final ProfissionalSaudeBO profissionalSaudeBO;
     private final DisponibilidadeBO disponibilidadeBO;
 
-    public MenuAdminView(Scanner scanner, 
-                     TipoServicoBO tipoServicoBO, 
-                     EspecialidadeBO especialidadeBO,
-                     PostoSaudeBO postoSaudeBO,
-                     ProfissionalSaudeBO profissionalSaudeBO,
-                     DisponibilidadeBO disponibilidadeBO) {
+    public MenuAdminView(
+            Scanner scanner,
+            TipoServicoBO tipoServicoBO,
+            EspecialidadeBO especialidadeBO,
+            PostoSaudeBO postoSaudeBO,
+            ProfissionalSaudeBO profissionalSaudeBO,
+            DisponibilidadeBO disponibilidadeBO) {
         this.scanner = scanner;
         this.tipoServicoBO = tipoServicoBO;
         this.especialidadeBO = especialidadeBO;
@@ -82,10 +83,12 @@ public class MenuAdminView {
         
         if (op.equals("1")) {
             especialidadeBO.listarTodos().forEach(e -> 
-                System.out.printf("[%d] %s - %s\n", e.getId(), e.getNome(), e.getDescricao()));
+                System.out.printf("[%d] %s - %s%n", e.getId(), e.getNome(), e.getDescricao()));
         } else if (op.equals("2")) {
-            System.out.print("Nome: "); String nome = scanner.nextLine();
-            System.out.print("Descrição: "); String desc = scanner.nextLine();
+            System.out.print("Nome: ");
+            String nome = scanner.nextLine();
+            System.out.print("Descrição: ");
+            String desc = scanner.nextLine();
 
             Especialidade e = new Especialidade(0, nome, desc); 
             especialidadeBO.salvar(e);
@@ -115,23 +118,38 @@ public class MenuAdminView {
         String op = scanner.nextLine();
 
         if (op.equals("1")) {
-            tipoServicoBO.listarTodos().forEach(s -> 
-                System.out.printf("[%d] %s (%d min) - Req: %s\n", s.getId(), s.getNome(), s.getDuracaoMinutos(), s.getEspecialidadeNecessaria().getNome()));
+            tipoServicoBO.listarTodos().forEach(s ->
+                    System.out.printf(
+                            "[%d] %s (Duração Média: %d min) - Especialidade: %s%n",
+                            s.getId(),
+                            s.getNome(),
+                            s.getDuracaoMinutos(),
+                            s.getEspecialidadeNecessaria().getNome()
+                    ));
         } else if (op.equals("2")) {
-            System.out.print("Nome do Serviço: "); String nome = scanner.nextLine();
-            System.out.print("Duração (min): "); int duracao = Integer.parseInt(scanner.nextLine());
+            try {
+                System.out.print("Nome do Serviço: ");
+                String nome = scanner.nextLine();
 
-            System.out.println("Selecione a Especialidade Necessária:");
-            especialidadeBO.listarTodos().forEach(e -> System.out.printf("[%d] %s\n", e.getId(), e.getNome()));
-            System.out.print("> ID: "); 
-            int idEsp = Integer.parseInt(scanner.nextLine());
-            
-            Especialidade esp = new Especialidade(); 
-            esp.setId(idEsp);
+                System.out.print("Duração (min): ");
+                int duracao = Integer.parseInt(scanner.nextLine());
 
-            TipoServico ts = new TipoServico(0, nome, duracao, esp);
-            tipoServicoBO.salvar(ts);
-            System.out.println("Serviço salvo!");
+                System.out.println("Selecione a Especialidade Necessária:");
+                especialidadeBO.listarTodos().forEach(e ->
+                        System.out.printf("[%d] %s%n", e.getId(), e.getNome()));
+
+                System.out.print("> ID: ");
+                int idEsp = Integer.parseInt(scanner.nextLine());
+
+                Especialidade esp = new Especialidade();
+                esp.setId(idEsp);
+
+                TipoServico ts = new TipoServico(0, nome, duracao, esp);
+                tipoServicoBO.salvar(ts);
+                System.out.println("Serviço salvo!");
+            } catch (NumberFormatException e) {
+                System.out.println("Erro de digitação: Por favor, digite um número inteiro válido.");
+            }
         }
     }
 
@@ -141,12 +159,15 @@ public class MenuAdminView {
         String op = scanner.nextLine();
 
         if (op.equals("1")) {
-            postoSaudeBO.listarTodos().forEach(p -> 
-                System.out.printf("[%d] %s - %s\n", p.getId(), p.getNome(), p.getEndereco()));
+            postoSaudeBO.listarTodos().forEach(p ->
+                System.out.printf("[%d] %s - %s%n", p.getId(), p.getNome(), p.getEndereco()));
         } else if (op.equals("2")) {
-            System.out.print("Nome: "); String nome = scanner.nextLine();
-            System.out.print("Endereço: "); String end = scanner.nextLine();
-            System.out.print("Telefone: "); String tel = scanner.nextLine();
+            System.out.print("Nome: ");
+            String nome = scanner.nextLine();
+            System.out.print("Endereço: ");
+            String end = scanner.nextLine();
+            System.out.print("Telefone: ");
+            String tel = scanner.nextLine();
 
             PostoSaude p = new PostoSaude(0, nome, end, tel);
             postoSaudeBO.salvar(p);
@@ -160,8 +181,12 @@ public class MenuAdminView {
         String op = scanner.nextLine();
 
         if (op.equals("1")) {
-            profissionalSaudeBO.listarTodos().forEach(p -> 
-                System.out.printf("[%d] %s (%s) - %s\n", p.getId(), p.getNome(), p.getTipo(), p.getEspecialidade().getNome()));
+            profissionalSaudeBO.listarTodos().forEach(p ->
+                    System.out.printf("[%d] %s (%s) - %s%n",
+                            p.getId(),
+                            p.getNome(),
+                            p.getTipo(),
+                            p.getEspecialidade().getNome()));
         } else if (op.equals("2")) {
             ProfissionalSaude p = new ProfissionalSaude();
 
@@ -171,29 +196,41 @@ public class MenuAdminView {
             System.out.print("CPF: "); 
             p.setCpf(scanner.nextLine());
 
-            System.out.println("Data de Nascimento (dd/MM/yyyy): "); 
+            System.out.println("Data de Nascimento (dd/MM/yyyy): ");
             String dataTexto = scanner.nextLine();
-            LocalDate dataNascimento = LocalDate.parse(dataTexto,DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            p.setDataNascimento(dataNascimento);
+            try {
+                LocalDate dataNascimento = LocalDate.parse(
+                        dataTexto,
+                        DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                );
+                p.setDataNascimento(dataNascimento);
+            } catch (DateTimeParseException e) {
+                System.out.println("Erro: Data inválida. Use o formato dd/MM/yyyy.");
+                return;
+            }
 
-            System.out.print("Registro Profissional: "); 
+            System.out.print("Registro Profissional: ");
             p.setRegistroProfissional(scanner.nextLine());
 
-            System.out.print("Telefone: "); 
+            System.out.print("Telefone: ");
             p.setTelefone(scanner.nextLine());
 
-            System.out.print("Endereço: "); 
+            System.out.print("Endereço: ");
             p.setEndereco(scanner.nextLine());
 
             System.out.println("Cargo (1-MEDICO, 2-ENFERMEIRO, 3-TECNICO): ");
-
             int cargo = Integer.parseInt(scanner.nextLine());
-            p.setTipo(cargo == 1 ? CargoProfissional.MEDICO : cargo == 2 ? CargoProfissional.ENFERMEIRO : CargoProfissional.TECNICO);
+            p.setTipo(
+                    cargo == 1 ? CargoProfissional.MEDICO
+                            : cargo == 2 ? CargoProfissional.ENFERMEIRO
+                            : CargoProfissional.TECNICO
+            );
 
             System.out.println("Especialidade (ID): ");
-            especialidadeBO.listarTodos().forEach(e -> System.out.printf("[%d] %s\n", e.getId(), e.getNome()));
+            especialidadeBO.listarTodos().forEach(e ->
+                    System.out.printf("[%d] %s%n", e.getId(), e.getNome()));
+
             int idEsp = Integer.parseInt(scanner.nextLine());
-            
             Especialidade e = new Especialidade();
             e.setId(idEsp);
             p.setEspecialidade(e);
@@ -203,79 +240,81 @@ public class MenuAdminView {
         }
     }
 
-   private void cadastrarDisponibilidade() throws SQLException, NegocioException {
-    System.out.println("\n--- NOVA GRADE HORÁRIA ---");
+    private void cadastrarDisponibilidade() throws SQLException, NegocioException {
+        System.out.println("\n--- NOVA GRADE HORÁRIA ---");
 
-    try {
-        System.out.println("\nSelecione o Profissional:");
-        profissionalSaudeBO.listarTodos().forEach(p -> System.out.printf("[%d] %s\n", p.getId(), p.getNome()));
-        System.out.println("[0] - Voltar");
-        System.out.print("> ID: "); 
-        String entradaProf = scanner.nextLine();
-        if (entradaProf.equals("0")) return;
-        
-        int idProf = Integer.parseInt(entradaProf);
-        ProfissionalSaude prof = profissionalSaudeBO.buscarPorId(idProf);
+        try {
+            System.out.println("\nSelecione o Profissional:");
+            profissionalSaudeBO.listarTodos().forEach(p ->
+                    System.out.printf("[%d] %s%n", p.getId(), p.getNome()));
+            System.out.println("[0] - Voltar");
+            System.out.print("> ID: ");
+            String entradaProf = scanner.nextLine();
+            if (entradaProf.equals("0")) return;
 
-        System.out.println("\nSelecione o Posto:");
-        postoSaudeBO.listarTodos().forEach(p -> System.out.printf("[%d] %s\n", p.getId(), p.getNome()));
-        System.out.println("[0] - Voltar");
-        System.out.print("> ID: "); 
-        String entradaPosto = scanner.nextLine();
+            int idProf = Integer.parseInt(entradaProf);
+            ProfissionalSaude prof = profissionalSaudeBO.buscarPorId(idProf);
 
-        if (entradaPosto.equals("0")) return;
-        int idPosto = Integer.parseInt(entradaPosto);
-        PostoSaude posto = postoSaudeBO.buscarPorId(idPosto);
+            System.out.println("\nSelecione o Posto:");
+            postoSaudeBO.listarTodos().forEach(p ->
+                    System.out.printf("[%d] %s%n", p.getId(), p.getNome()));
+            System.out.println("[0] - Voltar");
+            System.out.print("> ID: ");
+            String entradaPosto = scanner.nextLine();
+            if (entradaPosto.equals("0")) return;
 
-        System.out.println("\nSelecione o Dia da Semana:");
-        for (int i = 1; i <= 7; i++) {
-            DayOfWeek dia = DayOfWeek.of(i);
-            System.out.printf("[%d] - %s\n", i, traduzirDiaSemana(dia));
+            int idPosto = Integer.parseInt(entradaPosto);
+            PostoSaude posto = postoSaudeBO.buscarPorId(idPosto);
+
+            System.out.println("\nSelecione o Dia da Semana:");
+            for (int i = 1; i <= 7; i++) {
+                DayOfWeek dia = DayOfWeek.of(i);
+                System.out.printf("[%d] - %s%n", i, traduzirDiaSemana(dia));
+            }
+
+            System.out.println("[0] - Voltar");
+            System.out.print("> Opção (1-7): ");
+            String entradaDia = scanner.nextLine();
+            if (entradaDia.equals("0")) return;
+
+            int dia = Integer.parseInt(entradaDia);
+            if (dia < 1 || dia > 7) {
+                throw new NegocioException("Dia da semana inválido. Use 1 a 7.");
+            }
+            DayOfWeek diaSemana = DayOfWeek.of(dia);
+
+            System.out.print("Hora Início (HH:mm, ex: 08:00): ");
+            LocalTime inicio = LocalTime.parse(scanner.nextLine());
+
+            System.out.print("Hora Fim (HH:mm, ex: 12:00): ");
+            LocalTime fim = LocalTime.parse(scanner.nextLine());
+
+            Disponibilidade d = new Disponibilidade();
+            d.setProfissional(prof);
+            d.setPosto(posto);
+            d.setDiaSemana(diaSemana);
+            d.setHoraInicio(inicio);
+            d.setHoraFim(fim);
+
+            disponibilidadeBO.salvar(d);
+            System.out.println("Grade cadastrada com sucesso!");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Erro de digitação: Por favor, digite um ID válido.");
+        } catch (DateTimeParseException e) {
+            System.out.println("Erro de formato de hora. Use o formato HH:mm (ex: 08:00).");
         }
-
-        System.out.println("[0] - Voltar");
-        System.out.print("> Opção (1-7): ");
-        String entradaDia = scanner.nextLine();
-        if (entradaDia.equals("0")) return;
-        int dia = Integer.parseInt(entradaDia);
-        
-        if (dia < 1 || dia > 7) {
-            throw new NegocioException("Dia da semana inválido. Use 1 a 7.");
-        }
-        DayOfWeek diaSemana = DayOfWeek.of(dia);
-
-        System.out.print("Hora Início (HH:mm, ex: 08:00): ");
-        LocalTime inicio = LocalTime.parse(scanner.nextLine());
-
-        System.out.print("Hora Fim (HH:mm, ex: 12:00): ");
-        LocalTime fim = LocalTime.parse(scanner.nextLine());
-
-        Disponibilidade d = new Disponibilidade();
-        d.setProfissional(prof);
-        d.setPosto(posto);
-        d.setDiaSemana(diaSemana);
-        d.setHoraInicio(inicio);
-        d.setHoraFim(fim);
-
-        disponibilidadeBO.salvar(d);
-        System.out.println("Grade cadastrada com sucesso!");
-
-    } catch (NumberFormatException e) {
-        System.out.println("Erro de input: Por favor, digite apenas números inteiros.");
-    } catch (DateTimeParseException e) {
-        System.out.println("Erro de formato de hora: Use o formato HH:mm (ex: 08:00).");
     }
-}
 
     private String traduzirDiaSemana(java.time.DayOfWeek dia) {
-    return switch (dia) {
-        case MONDAY -> "Segunda-feira";
-        case TUESDAY -> "Terça-feira";
-        case WEDNESDAY -> "Quarta-feira";
-        case THURSDAY -> "Quinta-feira";
-        case FRIDAY -> "Sexta-feira";
-        case SATURDAY -> "Sábado";
-        case SUNDAY -> "Domingo";
-    };
-}
+        return switch (dia) {
+            case MONDAY -> "Segunda-feira";
+            case TUESDAY -> "Terça-feira";
+            case WEDNESDAY -> "Quarta-feira";
+            case THURSDAY -> "Quinta-feira";
+            case FRIDAY -> "Sexta-feira";
+            case SATURDAY -> "Sábado";
+            case SUNDAY -> "Domingo";
+        };
+    }
 }
