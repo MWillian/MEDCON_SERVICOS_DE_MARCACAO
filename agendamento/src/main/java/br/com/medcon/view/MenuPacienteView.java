@@ -87,26 +87,33 @@ public class MenuPacienteView {
     }
 
     private void cadastrarPaciente() {
+        DateTimeFormatter formatador = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         try {
             System.out.println("\n--- NOVO CADASTRO ---");
             System.out.print("Nome Completo: ");
             String nome = scanner.nextLine();
+            pacienteBO.ValidarNome(nome);
 
             System.out.print("CPF (XXX.XXX.XXX-XX): ");
             String cpf = scanner.nextLine();
+            pacienteBO.ValidarCpf(pacienteBO.limparNumero(cpf));
 
             System.out.print("Data Nascimento (dd/MM/yyyy): ");
             String dataTexto = scanner.nextLine();
+            pacienteBO.ValidarDataNascimento(LocalDate.parse(dataTexto, formatador));
             
             LocalDate dataNasc = LocalDate.parse(dataTexto, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             System.out.print("Telefone: ");
             String fone = scanner.nextLine();
+            pacienteBO.ValidarTelefone(pacienteBO.limparNumero(fone));
 
             System.out.print("Endereço: ");
             String endereco = scanner.nextLine();
+            pacienteBO.ValidarEndereco(endereco);
 
             System.out.print("Cartão SUS: ");
             String cartaoSus = scanner.nextLine();
+            pacienteBO.ValidarCartaoSus(pacienteBO.limparNumero(cartaoSus));
 
             Paciente novoPaciente = new Paciente(0, nome, cpf, dataNasc, fone, endereco, cartaoSus);
             pacienteBO.salvar(novoPaciente);
