@@ -74,16 +74,15 @@ public class MenuPacienteView {
         String cpf = scanner.nextLine();
         try {
             Paciente p = pacienteBO.buscarPorCpf(cpf);
-            
-            if (p != null) {
-                this.pacienteLogado = p;
-                System.out.println("Bem-vindo de volta, " + p.getNome() + "!");
-                exibirMenuLogado();
-            } else {
-                System.out.println("CPF não encontrado. Faça seu cadastro.");
-            }
+        
+            this.pacienteLogado = p;
+            System.out.println("Bem-vindo de volta, " + p.getNome() + "!");
+            exibirMenuLogado();
+    
         } catch (SQLException e) {
             System.out.println("Erro no sistema: " + e.getMessage());
+        }  catch (NegocioException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -209,7 +208,7 @@ public class MenuPacienteView {
                     agendamentoBO.salvar(ag, servicoSelecionado.getDuracaoMinutos());
                     System.out.println("Agendamento realizado com sucesso!");
                 } else {
-                    System.out.println("Operação cancelada.");
+                    System.out.println("OPÇÃO INVÁLIDA: Operação cancelada.");
                 }
             }
         } catch (NumberFormatException e) {

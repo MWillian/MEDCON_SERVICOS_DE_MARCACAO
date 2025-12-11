@@ -87,9 +87,20 @@ public class PacienteBO {
             return texto.replaceAll("\\D", "");
     }
 
-    public Paciente buscarPorCpf(String cpf) throws SQLException {
+    public Paciente buscarPorCpf(String cpf) throws SQLException, NegocioException {
         String cpfLimpo = limparNumero(cpf);
-        return dao.buscarPorCpf(cpfLimpo);
+        
+        if (!cpf.matches("\\d{11}")) {
+            throw new NegocioException("CPF inválido! O CPF deve conter 11 dígitos numéricos.");
+        }
+        
+        Paciente p = dao.buscarPorCpf(cpfLimpo);
+
+        if (p == null) {
+            throw new NegocioException("CPF não encontrado no sistema.");
+        }
+
+        return p;
     }
 
     private void ValidarTelefone(String foneLimpo) throws NegocioException {
