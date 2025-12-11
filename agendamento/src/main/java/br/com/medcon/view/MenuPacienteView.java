@@ -74,40 +74,46 @@ public class MenuPacienteView {
         String cpf = scanner.nextLine();
         try {
             Paciente p = pacienteBO.buscarPorCpf(cpf);
-            
-            if (p != null) {
-                this.pacienteLogado = p;
-                System.out.println("Bem-vindo de volta, " + p.getNome() + "!");
-                exibirMenuLogado();
-            } else {
-                System.out.println("CPF não encontrado. Faça seu cadastro.");
-            }
+        
+            this.pacienteLogado = p;
+            System.out.println("Bem-vindo de volta, " + p.getNome() + "!");
+            exibirMenuLogado();
+    
         } catch (SQLException e) {
             System.out.println("Erro no sistema: " + e.getMessage());
+        }  catch (NegocioException e) {
+            System.out.println(e.getMessage());
         }
     }
 
     private void cadastrarPaciente() {
+        DateTimeFormatter formatador = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         try {
             System.out.println("\n--- NOVO CADASTRO ---");
             System.out.print("Nome Completo: ");
             String nome = scanner.nextLine();
+            pacienteBO.ValidarNome(nome);
 
             System.out.print("CPF (XXX.XXX.XXX-XX): ");
             String cpf = scanner.nextLine();
+            pacienteBO.ValidarCpf(pacienteBO.limparNumero(cpf));
 
             System.out.print("Data Nascimento (dd/MM/yyyy): ");
             String dataTexto = scanner.nextLine();
+            pacienteBO.ValidarDataNascimento(LocalDate.parse(dataTexto, formatador));
             
             LocalDate dataNasc = LocalDate.parse(dataTexto, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             System.out.print("Telefone: ");
             String fone = scanner.nextLine();
+            pacienteBO.ValidarTelefone(pacienteBO.limparNumero(fone));
 
             System.out.print("Endereço: ");
             String endereco = scanner.nextLine();
+            pacienteBO.ValidarEndereco(endereco);
 
             System.out.print("Cartão SUS: ");
             String cartaoSus = scanner.nextLine();
+            pacienteBO.ValidarCartaoSus(pacienteBO.limparNumero(cartaoSus));
 
             Paciente novoPaciente = new Paciente(0, nome, cpf, dataNasc, fone, endereco, cartaoSus);
             pacienteBO.salvar(novoPaciente);
@@ -209,7 +215,7 @@ public class MenuPacienteView {
                     agendamentoBO.salvar(ag, servicoSelecionado.getDuracaoMinutos());
                     System.out.println("Agendamento realizado com sucesso!");
                 } else {
-                    System.out.println("Operação cancelada.");
+                    System.out.println("OPÇÃO INVÁLIDA: Operação cancelada.");
                 }
             }
         } catch (NumberFormatException e) {

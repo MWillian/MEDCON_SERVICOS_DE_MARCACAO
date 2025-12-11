@@ -35,14 +35,14 @@ public class PacienteBO {
         ValidarCartaoSus(p.getCartaoSus());
     }
 
-    private void ValidarUnicidade(Paciente p) throws NegocioException, SQLException {
+    public void ValidarUnicidade(Paciente p) throws NegocioException, SQLException {
         Paciente existente = dao.buscarPorCpf(p.getCpf());
         if (existente != null) {
             throw new NegocioException("Já existe um paciente cadastrado com o CPF informado: " + p.getCpf());
         }
     }
 
-    private void ValidarNome(String nome) throws NegocioException {
+    public void ValidarNome(String nome) throws NegocioException {
         if (nome == null || nome.trim().length() < 3) {
             throw new NegocioException("Nome do paciente inválido: deve conter ao menos 3 letras.");
         }
@@ -51,7 +51,7 @@ public class PacienteBO {
     }
     }
 
-    private void ValidarCpf(String cpfLimpo) throws NegocioException {
+    public void ValidarCpf(String cpfLimpo) throws NegocioException {
         if (cpfLimpo == null || cpfLimpo.trim().isEmpty()) {
             throw new NegocioException("O CPF é obrigatório.");
         }
@@ -60,13 +60,13 @@ public class PacienteBO {
         }
     }
 
-    private void ValidarEndereco(String endereco) throws NegocioException {
+    public void ValidarEndereco(String endereco) throws NegocioException {
         if (endereco == null || endereco.trim().length() < 5) {
             throw new NegocioException("Endereço muito curto. Informe logradouro e número.");
         }
     }
 
-    private void ValidarDataNascimento(LocalDate data) throws NegocioException {
+    public void ValidarDataNascimento(LocalDate data) throws NegocioException {
         if (data == null) {
             throw new NegocioException("A data de nascimento é obrigatória.");
         }
@@ -75,24 +75,35 @@ public class PacienteBO {
         }
     }
 
-    private void ValidarCartaoSus(String susLimpo) throws NegocioException {
+    public void ValidarCartaoSus(String susLimpo) throws NegocioException {
         if (susLimpo == null) return;
         if (susLimpo.length() < 3) { 
             throw new NegocioException("Número do Cartão SUS inválido.");
         }
     }
 
-    private String limparNumero(String texto) {
+    public String limparNumero(String texto) {
             if (texto == null) return "";
             return texto.replaceAll("\\D", "");
     }
 
-    public Paciente buscarPorCpf(String cpf) throws SQLException {
+    public Paciente buscarPorCpf(String cpf) throws SQLException, NegocioException {
         String cpfLimpo = limparNumero(cpf);
-        return dao.buscarPorCpf(cpfLimpo);
+        
+        if (!cpf.matches("\\d{11}")) {
+            throw new NegocioException("CPF inválido! O CPF deve conter 11 dígitos numéricos.");
+        }
+        
+        Paciente p = dao.buscarPorCpf(cpfLimpo);
+
+        if (p == null) {
+            throw new NegocioException("CPF não encontrado no sistema.");
+        }
+
+        return p;
     }
 
-    private void ValidarTelefone(String foneLimpo) throws NegocioException {
+    public void ValidarTelefone(String foneLimpo) throws NegocioException {
         if (foneLimpo == null) return; 
         if (foneLimpo.length() < 10 || foneLimpo.length() > 11) {
             throw new NegocioException("Telefone inválido: Deve conter DDD + Número (10 ou 11 dígitos).");
