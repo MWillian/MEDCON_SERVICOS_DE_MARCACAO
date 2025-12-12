@@ -1,4 +1,5 @@
 package br.com.medcon.view;
+
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -20,8 +21,8 @@ import br.com.medcon.vo.PostoSaude;
 import br.com.medcon.vo.ProfissionalSaude;
 import br.com.medcon.vo.TipoServico;
 
-
 public class MenuAdminView {
+
     private final Scanner scanner;
     private final TipoServicoBO tipoServicoBO;
     private final EspecialidadeBO especialidadeBO;
@@ -46,8 +47,9 @@ public class MenuAdminView {
 
     public void iniciar() {
         if (!fazerLoginAdmin()) {
-            return; 
+            return;
         }
+
         while (true) {
             System.out.println("\n=== ÁREA ADMINISTRATIVA ===");
             System.out.println("1. Gerenciar Especialidades");
@@ -67,32 +69,34 @@ public class MenuAdminView {
                     case "3" -> menuPosto();
                     case "4" -> menuProfissional();
                     case "5" -> cadastrarDisponibilidade();
-                    case "0" -> { return; }
+                    case "0" -> {
+                        return;
+                    }
                     default -> System.out.println("Opção inválida.");
                 }
             } catch (NegocioException | SQLException e) {
-                System.out.println("Erro: " + e.getMessage());
+                System.out.println(e.getMessage());
             }
         }
     }
-    
+
     private void menuEspecialidade() throws SQLException, NegocioException {
         System.out.println("\n--- ESPECIALIDADES ---");
         System.out.println("1. Listar | 2. Cadastrar nova especialidade");
         String op = scanner.nextLine();
-        
+
         if (op.equals("1")) {
-            especialidadeBO.listarTodos().forEach(e -> 
-                System.out.printf("[%d] %s - %s%n", e.getId(), e.getNome(), e.getDescricao()));
+            especialidadeBO.listarTodos().forEach(e ->
+                    System.out.printf("[%d] %s - %s%n", e.getId(), e.getNome(), e.getDescricao()));
         } else if (op.equals("2")) {
             System.out.print("Nome: ");
             String nome = scanner.nextLine();
             System.out.print("Descrição: ");
             String desc = scanner.nextLine();
 
-            Especialidade e = new Especialidade(0, nome, desc); 
+            Especialidade e = new Especialidade(0, nome, desc);
             especialidadeBO.salvar(e);
-            System.out.println("Especialidade salva!");
+            System.out.println("Especialidade salva com sucesso!");
         }
     }
 
@@ -101,13 +105,13 @@ public class MenuAdminView {
         System.out.print("Digite seu CPF (apenas números): ");
         String cpf = scanner.nextLine();
         System.out.print("Senha: ");
-        String senha = scanner.nextLine(); 
+        String senha = scanner.nextLine();
 
         if (cpf.equals("12345678900") && senha.equals("admin123")) {
             System.out.println("Administrador logado com sucesso.");
             return true;
         }
-        
+
         System.out.println("Credenciais de administrador inválidas.");
         return false;
     }
@@ -124,8 +128,7 @@ public class MenuAdminView {
                             s.getId(),
                             s.getNome(),
                             s.getDuracaoMinutos(),
-                            s.getEspecialidadeNecessaria().getNome()
-                    ));
+                            s.getEspecialidadeNecessaria().getNome()));
         } else if (op.equals("2")) {
             try {
                 System.out.print("Nome do Serviço: ");
@@ -146,7 +149,7 @@ public class MenuAdminView {
 
                 TipoServico ts = new TipoServico(0, nome, duracao, esp);
                 tipoServicoBO.salvar(ts);
-                System.out.println("Serviço salvo!");
+                System.out.println("Serviço salvo com sucesso!");
             } catch (NumberFormatException e) {
                 System.out.println("Erro de digitação: Por favor, digite um número inteiro válido.");
             }
@@ -160,7 +163,7 @@ public class MenuAdminView {
 
         if (op.equals("1")) {
             postoSaudeBO.listarTodos().forEach(p ->
-                System.out.printf("[%d] %s - %s%n", p.getId(), p.getNome(), p.getEndereco()));
+                    System.out.printf("[%d] %s - %s%n", p.getId(), p.getNome(), p.getEndereco()));
         } else if (op.equals("2")) {
             System.out.print("Nome: ");
             String nome = scanner.nextLine();
@@ -171,7 +174,7 @@ public class MenuAdminView {
 
             PostoSaude p = new PostoSaude(0, nome, end, tel);
             postoSaudeBO.salvar(p);
-            System.out.println("Posto salvo!");
+            System.out.println("Posto salvo com sucesso!");
         }
     }
 
@@ -188,55 +191,57 @@ public class MenuAdminView {
                             p.getTipo(),
                             p.getEspecialidade().getNome()));
         } else if (op.equals("2")) {
-            ProfissionalSaude p = new ProfissionalSaude();
-
-            System.out.print("Nome: "); 
-            p.setNome(scanner.nextLine());
-
-            System.out.print("CPF: "); 
-            p.setCpf(scanner.nextLine());
-
-            System.out.println("Data de Nascimento (dd/MM/yyyy): ");
-            String dataTexto = scanner.nextLine();
             try {
-                LocalDate dataNascimento = LocalDate.parse(
-                        dataTexto,
-                        DateTimeFormatter.ofPattern("dd/MM/yyyy")
-                );
-                p.setDataNascimento(dataNascimento);
-            } catch (DateTimeParseException e) {
-                System.out.println("Erro: Data inválida. Use o formato dd/MM/yyyy.");
-                return;
+                ProfissionalSaude p = new ProfissionalSaude();
+
+                System.out.print("Nome: ");
+                p.setNome(scanner.nextLine());
+
+                System.out.print("CPF: ");
+                p.setCpf(scanner.nextLine());
+
+                System.out.println("Data de Nascimento (dd/MM/yyyy): ");
+                String dataTexto = scanner.nextLine();
+                try {
+                    LocalDate dataNascimento = LocalDate.parse(
+                            dataTexto,
+                            DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    p.setDataNascimento(dataNascimento);
+                } catch (DateTimeParseException e) {
+                    System.out.println("Erro: Data inválida. Use o formato dd/MM/yyyy.");
+                    return;
+                }
+
+                System.out.print("Registro Profissional: ");
+                p.setRegistroProfissional(scanner.nextLine());
+
+                System.out.print("Telefone: ");
+                p.setTelefone(scanner.nextLine());
+
+                System.out.print("Endereço: ");
+                p.setEndereco(scanner.nextLine());
+
+                System.out.println("Cargo (1-MEDICO, 2-ENFERMEIRO, 3-TECNICO): ");
+                int cargo = Integer.parseInt(scanner.nextLine());
+                p.setTipo(
+                        cargo == 1 ? CargoProfissional.MEDICO
+                                : cargo == 2 ? CargoProfissional.ENFERMEIRO
+                                        : CargoProfissional.TECNICO);
+
+                System.out.println("Especialidade (ID): ");
+                especialidadeBO.listarTodos().forEach(e ->
+                        System.out.printf("[%d] %s%n", e.getId(), e.getNome()));
+
+                int idEsp = Integer.parseInt(scanner.nextLine());
+                Especialidade e = new Especialidade();
+                e.setId(idEsp);
+                p.setEspecialidade(e);
+
+                profissionalSaudeBO.salvar(p);
+                System.out.println("Profissional salvo com sucesso!");
+            } catch (NumberFormatException e) {
+                System.out.println("Erro de digitação: Por favor, digite um número inteiro válido.");
             }
-
-            System.out.print("Registro Profissional: ");
-            p.setRegistroProfissional(scanner.nextLine());
-
-            System.out.print("Telefone: ");
-            p.setTelefone(scanner.nextLine());
-
-            System.out.print("Endereço: ");
-            p.setEndereco(scanner.nextLine());
-
-            System.out.println("Cargo (1-MEDICO, 2-ENFERMEIRO, 3-TECNICO): ");
-            int cargo = Integer.parseInt(scanner.nextLine());
-            p.setTipo(
-                    cargo == 1 ? CargoProfissional.MEDICO
-                            : cargo == 2 ? CargoProfissional.ENFERMEIRO
-                            : CargoProfissional.TECNICO
-            );
-
-            System.out.println("Especialidade (ID): ");
-            especialidadeBO.listarTodos().forEach(e ->
-                    System.out.printf("[%d] %s%n", e.getId(), e.getNome()));
-
-            int idEsp = Integer.parseInt(scanner.nextLine());
-            Especialidade e = new Especialidade();
-            e.setId(idEsp);
-            p.setEspecialidade(e);
-
-            profissionalSaudeBO.salvar(p);
-            System.out.println("Profissional salvo!");
         }
     }
 
@@ -250,7 +255,8 @@ public class MenuAdminView {
             System.out.println("[0] - Voltar");
             System.out.print("> ID: ");
             String entradaProf = scanner.nextLine();
-            if (entradaProf.equals("0")) return;
+            if (entradaProf.equals("0"))
+                return;
 
             int idProf = Integer.parseInt(entradaProf);
             ProfissionalSaude prof = profissionalSaudeBO.buscarPorId(idProf);
@@ -261,7 +267,8 @@ public class MenuAdminView {
             System.out.println("[0] - Voltar");
             System.out.print("> ID: ");
             String entradaPosto = scanner.nextLine();
-            if (entradaPosto.equals("0")) return;
+            if (entradaPosto.equals("0"))
+                return;
 
             int idPosto = Integer.parseInt(entradaPosto);
             PostoSaude posto = postoSaudeBO.buscarPorId(idPosto);
@@ -275,7 +282,8 @@ public class MenuAdminView {
             System.out.println("[0] - Voltar");
             System.out.print("> Opção (1-7): ");
             String entradaDia = scanner.nextLine();
-            if (entradaDia.equals("0")) return;
+            if (entradaDia.equals("0"))
+                return;
 
             int dia = Integer.parseInt(entradaDia);
             if (dia < 1 || dia > 7) {
