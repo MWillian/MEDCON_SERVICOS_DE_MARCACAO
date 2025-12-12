@@ -16,7 +16,8 @@ public class PostoSaudeBO {
     }
 
     public void salvar(PostoSaude posto) throws NegocioException, SQLException {
-        ValidarCamposObrigatorios(posto);
+        validarCamposObrigatorios(posto);
+        validarUnicidade(posto);
         dao.salvar(posto);
     }
 
@@ -25,19 +26,72 @@ public class PostoSaudeBO {
     }
 
     public PostoSaude buscarPorId(int id) throws SQLException, NegocioException {
-        PostoSaude posto = dao.buscarPorId(id); 
+        PostoSaude posto = dao.buscarPorId(id);
         if (posto == null) {
-            throw new NegocioException("Posto não encontrado.");
+            throw new NegocioException("Posto com ID " + id + " não encontrado.");
         }
         return posto;
     }
 
-    public void ValidarCamposObrigatorios(PostoSaude posto) throws NegocioException{
-        if (posto.getNome() == null || posto.getNome().trim().length() < 10) {
-            throw new NegocioException("Nome do Posto é obrigatório (min 10 caracteres).");
+    private void validarCamposObrigatorios(PostoSaude posto) throws NegocioException {
+        validarNome(posto.getNome());
+        validarEndereco(posto.getEndereco());
+        validarTelefone(posto.getTelefone());
+    }
+
+    private void validarNome(String nome) throws NegocioException {
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new NegocioException("Erro: O nome do posto é obrigatório.");
         }
-        if (posto.getEndereco() == null || posto.getEndereco().trim().length() < 5) {
-            throw new NegocioException("Endereço é obrigatório.");
+
+        if (nome.trim().length() < 5) {
+            throw new NegocioException("Erro: O nome do posto deve ter ao menos 5 caracteres.");
+        }
+
+        if (nome.matches("^\\d+$")) {
+            throw new NegocioException("Erro: O nome do posto não pode ser composto apenas por números.");
+        }
+    }
+
+    private void validarEndereco(String endereco) throws NegocioException {
+        if (endereco == null || endereco.trim().isEmpty()) {
+            throw new NegocioException("Erro: O endereço do posto é obrigatório.");
+        }
+
+        if (endereco.trim().length() < 10) {
+            throw new NegocioException("Erro: O endereço do posto deve ter ao menos 10 caracteres.");
+        }
+
+        if (endereco.matches("^\\d+$")) {
+            throw new NegocioException("Erro: O endereço do posto não pode ser composto apenas por números.");
+        }
+    }
+
+    private void validarTelefone(String telefone) throws NegocioException {
+        if (telefone == null || telefone.trim().isEmpty()) {
+            throw new NegocioException("Erro: O telefone do posto é obrigatório.");
+        }
+
+        String telefoneLimpo = telefone.replaceAll("[^0-9]", "");
+
+        if (telefoneLimpo.length() < 10 || telefoneLimpo.length() > 11) {
+            throw new NegocioException("Erro: O telefone deve ter 10 ou 11 dígitos (com DDD).");
+        }
+
+        if (telefone.matches(".*[a-zA-Z].*")) {
+            throw new NegocioException("Erro: O telefone não pode conter letras.");
+        }
+    }
+
+    private void validarUnicidade(PostoSaude posto) throws NegocioException, SQLException {
+        PostoSaude existente = dao.buscarPorNomeEnderecoTelefoneIgnoreCase(
+                posto.getNome(),
+                posto.getEndereco(),
+                posto.getTelefone());
+
+        if (existente != null) {
+            throw new NegocioException(
+                    "Erro: Já existe um posto cadastrado com este nome, endereço e telefone.");
         }
     }
 }
