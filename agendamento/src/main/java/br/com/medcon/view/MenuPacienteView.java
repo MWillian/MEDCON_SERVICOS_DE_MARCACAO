@@ -303,8 +303,6 @@ public class MenuPacienteView {
             }
         } catch (SQLException e) {
             System.out.println("Erro ao buscar agendamentos: " + e.getMessage());
-        } catch (NegocioException e) {
-            System.out.println(e.getMessage());
         }
     }
 
