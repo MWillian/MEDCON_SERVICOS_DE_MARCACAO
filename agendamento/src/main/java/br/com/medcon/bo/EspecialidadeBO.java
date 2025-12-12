@@ -15,8 +15,8 @@ public class EspecialidadeBO {
     }
 
     public void salvar(Especialidade especialidade) throws NegocioException, SQLException {
-        ValidarCamposObrigatorios(especialidade);
-        ValidarUnicidade(especialidade);
+        validarCamposObrigatorios(especialidade);
+        validarUnicidade(especialidade);
         especialidadeDAO.salvar(especialidade);
     }
 
@@ -24,7 +24,7 @@ public class EspecialidadeBO {
         return especialidadeDAO.listarTodos();
     }
 
-    public Especialidade buscarPorId(int id) throws NegocioException,SQLException {
+    public Especialidade buscarPorId(int id) throws NegocioException, SQLException {
         Especialidade esp = especialidadeDAO.buscarPorId(id);
 
         if (esp == null) {
@@ -37,19 +37,40 @@ public class EspecialidadeBO {
         return especialidadeDAO.buscarPorNome(nome);
     }
 
-    private void ValidarCamposObrigatorios(Especialidade especialidade) throws NegocioException {
-        if (especialidade.getNome() == null || especialidade.getNome().trim().length() < 3) {
-            throw new NegocioException("O nome da especialidade é obrigatório e deve ter ao menos 3 caracteres.");
+    private void validarCamposObrigatorios(Especialidade especialidade) throws NegocioException {
+        String nome = especialidade.getNome();
+        String descricao = especialidade.getDescricao();
+
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new NegocioException("Erro: O nome da especialidade é obrigatório.");
         }
-        if (especialidade.getDescricao() == null || especialidade.getDescricao().trim().length() < 10) {
-            throw new NegocioException("A descriçao da especidade deve ser de no mínimo 10 caracteres.");
+
+        if (nome.trim().length() < 3) {
+            throw new NegocioException("Erro: O nome da especialidade deve ter ao menos 3 caracteres.");
+        }
+
+        if (nome.matches(".*\\d.*")) {
+            throw new NegocioException("Erro: O nome da especialidade não pode conter números.");
+        }
+
+        if (descricao == null || descricao.trim().isEmpty()) {
+            throw new NegocioException("Erro: A descrição da especialidade é obrigatória.");
+        }
+
+        if (descricao.trim().length() < 10) {
+            throw new NegocioException("Erro: A descrição da especialidade deve ter ao menos 10 caracteres.");
+        }
+
+        if (descricao.matches(".*\\d.*")) {
+            throw new NegocioException("Erro: A descrição da especialidade não pode conter números.");
         }
     }
 
-    private void ValidarUnicidade(Especialidade especialidade) throws NegocioException, SQLException {
-        Especialidade existente = especialidadeDAO.buscarPorNome(especialidade.getNome());
+    private void validarUnicidade(Especialidade especialidade) throws NegocioException, SQLException {
+        Especialidade existente = especialidadeDAO.buscarPorNomeIgnoreCase(especialidade.getNome());
+        
         if (existente != null) {
-            throw new NegocioException("Essa especialidade já está cadastrada no banco de dados.");
+            throw new NegocioException("Erro: Já existe uma especialidade cadastrada com este nome.");
         }
     }
 }
