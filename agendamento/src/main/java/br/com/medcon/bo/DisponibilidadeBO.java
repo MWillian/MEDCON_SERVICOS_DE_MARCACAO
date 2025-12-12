@@ -1,4 +1,5 @@
 package br.com.medcon.bo;
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -9,14 +10,15 @@ import br.com.medcon.vo.Especialidade;
 
 public class DisponibilidadeBO {
     private final DisponibilidadeDAO disponibilidadeDAO;
-    
+
     public DisponibilidadeBO(DisponibilidadeDAO disponibilidadeDAO) {
         this.disponibilidadeDAO = disponibilidadeDAO;
     }
 
     public void salvar(Disponibilidade disponibilidade) throws NegocioException, SQLException {
-        ValidarCamposObrigatorios(disponibilidade);
-        ValidarHorarios(disponibilidade);
+        validarCamposObrigatorios(disponibilidade);
+        validarHorarios(disponibilidade);
+        validarConflitoDisponibilidade(disponibilidade);
         disponibilidadeDAO.salvar(disponibilidade);
     }
 
@@ -25,48 +27,68 @@ public class DisponibilidadeBO {
     }
 
     public Disponibilidade buscarPorId(int id) throws NegocioException, SQLException {
-        Disponibilidade esp = disponibilidadeDAO.buscarPorId(id);
-        if (esp == null) {
-            throw new NegocioException("Disponibilidade com ID " + id + " não encontrada.");
+        Disponibilidade disp = disponibilidadeDAO.buscarPorId(id);
+        if (disp == null) {
+            throw new NegocioException("Erro: Disponibilidade com ID " + id + " não encontrada.");
         }
-        return esp;
+        return disp;
     }
 
-    //MÉTODOS AUXILIARES
-    private void ValidarCamposObrigatorios(Disponibilidade d) throws NegocioException{
-        if (d.getProfissional() == null || d.getProfissional().getId() <= 0) {
-            throw new NegocioException("A disponibilidade deve estar vinculada a um Profissional.");
-        }
-        
-        if (d.getPosto() == null || d.getPosto().getId() <= 0) {
-            throw new NegocioException("A disponibilidade deve estar vinculada a um Posto de Saúde.");
-        }
-        
-        if (d.getDiaSemana() == null) {
-            throw new NegocioException("O dia da semana é obrigatório.");
-        }
-    }
-
-    private void ValidarHorarios(Disponibilidade d) throws NegocioException {
-        if (d.getHoraInicio() == null || d.getHoraFim() == null) {
-            throw new NegocioException("Horários de início e fim são obrigatórios.");
-        }
-        
-        if (!d.getHoraInicio().isBefore(d.getHoraFim())) {
-            throw new NegocioException("Horário inválido: A hora de início (" + d.getHoraInicio() + 
-                                     ") deve ser anterior à hora de fim (" + d.getHoraFim() + ").");
-        }
-    }
-
-    public List<Disponibilidade>  buscarPorMedico(int id) throws SQLException {
+    public List<Disponibilidade> buscarPorMedico(int id) throws SQLException {
         return disponibilidadeDAO.buscarPorMedico(id);
     }
 
-    public List<Disponibilidade> buscarPorEspecialidade(Especialidade especialidade) throws SQLException, NegocioException {
+    public List<Disponibilidade> buscarPorEspecialidade(Especialidade especialidade)
+            throws SQLException, NegocioException {
         if (especialidade == null || especialidade.getId() <= 0) {
-            throw new NegocioException("Especialidade inválida para a busca.");
+            throw new NegocioException("Erro: Especialidade inválida para a busca.");
         }
 
         return this.disponibilidadeDAO.buscarPorEspecialidade(especialidade.getId());
+    }
+
+    private void validarCamposObrigatorios(Disponibilidade d) throws NegocioException {
+        if (d.getProfissional() == null || d.getProfissional().getId() <= 0) {
+            throw new NegocioException("Erro: A disponibilidade deve estar vinculada a um profissional.");
+        }
+
+        if (d.getPosto() == null || d.getPosto().getId() <= 0) {
+            throw new NegocioException("Erro: A disponibilidade deve estar vinculada a um posto de saúde.");
+        }
+
+        if (d.getDiaSemana() == null) {
+            throw new NegocioException("Erro: O dia da semana é obrigatório.");
+        }
+    }
+
+    private void validarHorarios(Disponibilidade d) throws NegocioException {
+        if (d.getHoraInicio() == null || d.getHoraFim() == null) {
+            throw new NegocioException("Erro: Horários de início e fim são obrigatórios.");
+        }
+
+        if (!d.getHoraInicio().isBefore(d.getHoraFim())) {
+            throw new NegocioException(
+                    "Erro: Horário inválido. A hora de início (" + d.getHoraInicio()
+                            + ") deve ser anterior à hora de fim (" + d.getHoraFim() + ").");
+        }
+    }
+
+    private void validarConflitoDisponibilidade(Disponibilidade nova) throws NegocioException, SQLException {
+        List<Disponibilidade> disponibilidadesExistentes = disponibilidadeDAO
+                .buscarPorMedico(nova.getProfissional().getId());
+
+        for (Disponibilidade existente : disponibilidadesExistentes) {
+            if (existente.getDiaSemana() == nova.getDiaSemana()
+                    && existente.getPosto().getId() == nova.getPosto().getId()) {
+
+                boolean horarioConflita = !(nova.getHoraFim().isBefore(existente.getHoraInicio())
+                        || nova.getHoraInicio().isAfter(existente.getHoraFim()));
+
+                if (horarioConflita) {
+                    throw new NegocioException(
+                            "Erro: Conflito de horário! O profissional já possui disponibilidade neste dia/horário neste posto.");
+                }
+            }
+        }
     }
 }
