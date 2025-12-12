@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import br.com.medcon.interfaces.IConexao;
 
 public class ConexaoSQLite implements IConexao {
-    private static final String URL_CONEXAO = "jdbc:sqlite:C:\\Users\\Calebe\\Desktop\\Atividade_POO\\clinica.db"; // Coloque 
+    private static final String URL_CONEXAO = "jdbc:sqlite:C:\\Users\\mathe\\source\\repos\\dev\\MEDCON---CONSULTAS-MEDICAS\\clinica.db"; // Coloque 
     private static final String DRIVER = "org.sqlite.JDBC";
     @Override
     public Connection getConnection() throws SQLException {
@@ -19,7 +19,7 @@ public class ConexaoSQLite implements IConexao {
         return DriverManager.getConnection(URL_CONEXAO);
     }
     @Override
-    @SuppressWarnings("CallToPrintStackTrace") //não sei porque ta dand o erro no printStackTrace
+    @SuppressWarnings("CallToPrintStackTrace")
     public void closeConnection(Connection conn) {
         try {
             if (conn != null && !conn.isClosed()) {
