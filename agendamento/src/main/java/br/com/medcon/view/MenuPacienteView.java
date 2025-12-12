@@ -218,6 +218,7 @@ public class MenuPacienteView {
                     ag.setLaudo("Aguardando atendimento");
 
                     agendamentoBO.salvar(ag, servicoSelecionado.getDuracaoMinutos());
+                    disponibilidadeBO.deletar(disponibilidade.getId());
                     System.out.println("Agendamento realizado com sucesso!");
                 } else if (confirmacao.equals("N")) {
                     System.out.println("Operação cancelada.");
@@ -303,8 +304,6 @@ public class MenuPacienteView {
             }
         } catch (SQLException e) {
             System.out.println("Erro ao buscar agendamentos: " + e.getMessage());
-        } catch (NegocioException e) {
-            System.out.println(e.getMessage());
         }
     }
 
