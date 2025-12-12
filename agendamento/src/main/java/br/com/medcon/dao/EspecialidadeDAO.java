@@ -14,17 +14,17 @@ public class EspecialidadeDAO implements IEspecialidade {
     private final ConexaoFactory factory;
 
     public EspecialidadeDAO() {
-        this.factory = new ConexaoFactory(); // cria uma conexão específica com o SQLite
+        this.factory = new ConexaoFactory();
     }
 
     @Override
     public void salvar(Especialidade especialidade) throws SQLException {
         String sql = "INSERT INTO tb_especialidade (nome, descricao) VALUES (?, ?)";
         try (Connection conn = factory.getConexao();
-                PreparedStatement stmt = conn.prepareStatement(sql)) { // prepara o comando para ser executado na conexão atual do banco
-            stmt.setString(1, especialidade.getNome()); // substitui os ? para os parâmetros passados.
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, especialidade.getNome());
             stmt.setString(2, especialidade.getDescricao());
-            stmt.execute(); // roda a string no banco
+            stmt.execute();
         }
     }
 
@@ -37,7 +37,7 @@ public class EspecialidadeDAO implements IEspecialidade {
             stmt.setString(2, especialidade.getDescricao());
             stmt.setInt(3, especialidade.getId());
             stmt.executeUpdate();
-         }
+        }
     }
 
     @Override
@@ -57,12 +57,8 @@ public class EspecialidadeDAO implements IEspecialidade {
         try (Connection conn = factory.getConexao();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            try (ResultSet result = stmt.executeQuery()) { /* -> executa a string no banco nos casos de select. 
-                Sempre deve ser atribuída para uma variável ResultSet(recebe o resultado, tipo uma planilha) */
-                
-                if (result.next()) { /* -> O ResultSet sempre mantém um cursor na primeira linha. quando chamamos
-                                     result.next(), movemos o cursor uma linha para baixo. Se retornar true, o
-                                     cursor desceu (significa que tem mais linhas para percorrer).*/
+            try (ResultSet result = stmt.executeQuery()) {
+                if (result.next()) {
                     especialidade = montarObjeto(result);
                 }
             }
@@ -100,10 +96,25 @@ public class EspecialidadeDAO implements IEspecialidade {
         return esp;
     }
 
+    public Especialidade buscarPorNomeIgnoreCase(String nome) throws SQLException {
+        String sql = "SELECT * FROM tb_especialidade WHERE LOWER(nome) = LOWER(?)";
+        Especialidade esp = null;
+        try (Connection conn = factory.getConexao();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nome);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    esp = montarObjeto(rs);
+                }
+            }
+        }
+        return esp;
+    }
+
     private Especialidade montarObjeto(ResultSet result) throws SQLException {
         Especialidade especialidade = new Especialidade();
         especialidade.setId(result.getInt("id"));
-        especialidade.setNome(result.getString(("nome")));
+        especialidade.setNome(result.getString("nome"));
         especialidade.setDescricao(result.getString("descricao"));
         return especialidade;
     }
