@@ -91,8 +91,11 @@ public class MenuAdminView {
         } else if (op.equals("2")) {
             System.out.print("Nome: ");
             String nome = scanner.nextLine();
+            especialidadeBO.validarNome(nome);
+
             System.out.print("Descrição: ");
             String desc = scanner.nextLine();
+            especialidadeBO.validarDescricao(desc);
 
             Especialidade e = new Especialidade(0, nome, desc);
             especialidadeBO.salvar(e);
@@ -133,9 +136,11 @@ public class MenuAdminView {
             try {
                 System.out.print("Nome do Serviço: ");
                 String nome = scanner.nextLine();
+                tipoServicoBO.validarNome(nome);
 
                 System.out.print("Duração (min): ");
                 int duracao = Integer.parseInt(scanner.nextLine());
+                tipoServicoBO.validarDuracaoMinutos(duracao);
 
                 System.out.println("Selecione a Especialidade Necessária:");
                 especialidadeBO.listarTodos().forEach(e ->

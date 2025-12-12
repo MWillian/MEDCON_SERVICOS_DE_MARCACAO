@@ -15,7 +15,6 @@ public class EspecialidadeBO {
     }
 
     public void salvar(Especialidade especialidade) throws NegocioException, SQLException {
-        validarCamposObrigatorios(especialidade);
         validarUnicidade(especialidade);
         especialidadeDAO.salvar(especialidade);
     }
@@ -37,31 +36,30 @@ public class EspecialidadeBO {
         return especialidadeDAO.buscarPorNome(nome);
     }
 
-    private void validarCamposObrigatorios(Especialidade especialidade) throws NegocioException {
-        String nome = especialidade.getNome();
-        String descricao = especialidade.getDescricao();
-
-        if (nome == null || nome.trim().isEmpty()) {
+    public void validarNome(String nomeEspecialidade) throws NegocioException{
+        if (nomeEspecialidade == null || nomeEspecialidade.trim().isEmpty()) {
             throw new NegocioException("Erro: O nome da especialidade é obrigatório.");
         }
 
-        if (nome.trim().length() < 3) {
-            throw new NegocioException("Erro: O nome da especialidade deve ter ao menos 3 caracteres.");
+        if (nomeEspecialidade.trim().length() < 3) {
+            throw new NegocioException("Erro: O nome da especialidade deve ter ao menos 3 caracteres. Somente");
         }
 
-        if (nome.matches(".*\\d.*")) {
+        if (nomeEspecialidade.matches(".*\\d.*")) {
             throw new NegocioException("Erro: O nome da especialidade não pode conter números.");
         }
+    }
 
-        if (descricao == null || descricao.trim().isEmpty()) {
+    public void validarDescricao (String descricaoEspecialidade) throws NegocioException{
+         if (descricaoEspecialidade == null || descricaoEspecialidade.trim().isEmpty()) {
             throw new NegocioException("Erro: A descrição da especialidade é obrigatória.");
         }
 
-        if (descricao.trim().length() < 10) {
+        if (descricaoEspecialidade.trim().length() < 10) {
             throw new NegocioException("Erro: A descrição da especialidade deve ter ao menos 10 caracteres.");
         }
 
-        if (descricao.matches(".*\\d.*")) {
+        if (descricaoEspecialidade.matches(".*\\d.*")) {
             throw new NegocioException("Erro: A descrição da especialidade não pode conter números.");
         }
     }
