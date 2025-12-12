@@ -1,69 +1,93 @@
 package br.com.medcon.bo;
+
 import br.com.medcon.dao.TipoServicoDAO;
 import br.com.medcon.vo.Especialidade;
 import br.com.medcon.vo.TipoServico;
 import java.sql.SQLException;
 import java.util.List;
 import br.com.medcon.bo.exception.NegocioException;
-import br.com.medcon.dao.EspecialidadeDAO; 
+import br.com.medcon.dao.EspecialidadeDAO;
 
 public class TipoServicoBO {
     private final TipoServicoDAO dao;
-    private final EspecialidadeDAO especialidadeDAO; 
-        public TipoServicoBO(TipoServicoDAO dao, EspecialidadeDAO especialidadeDAO){
-            this.dao = dao;
-            this.especialidadeDAO = especialidadeDAO;
+    private final EspecialidadeDAO especialidadeDAO;
+
+    public TipoServicoBO(TipoServicoDAO dao, EspecialidadeDAO especialidadeDAO) {
+        this.dao = dao;
+        this.especialidadeDAO = especialidadeDAO;
+    }
+    
+    public void salvar(TipoServico servico) throws NegocioException, SQLException {
+        validarCamposObrigatorios(servico);
+        validarUnicidade(servico);
+        dao.salvar(servico);
+    }
+
+    public List<TipoServico> listarTodos() throws SQLException {
+        return dao.listarTodos();
+    }
+
+    public TipoServico buscarPorId(int id) throws SQLException, NegocioException {
+        if (id <= 0) {
+            throw new NegocioException("Tipo do Serviço deve ter um ID válido.");
+        }
+        TipoServico servico = dao.buscarPorId(id);
+        if (servico == null) {
+            throw new NegocioException("Serviço com ID " + id + " não encontrado.");
+        }
+        return servico;
+    }
+
+    private void validarCamposObrigatorios(TipoServico servico) throws SQLException, NegocioException {
+        validarNome(servico.getNome());
+        validarDuracaoMinutos(servico.getDuracaoMinutos());
+        buscarEspecialidade(servico.getEspecialidadeNecessaria());
+    }
+
+    private void validarNome(String nome) throws NegocioException {
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new NegocioException("Erro: O nome do serviço é obrigatório.");
         }
 
-        //MÉTODOS PRINCIPAIS
-        public void salvar(TipoServico servico) throws NegocioException, SQLException {
-            ValidarCamposObrigatorios(servico);
-            dao.salvar(servico);
+        if (nome.trim().length() < 3) {
+            throw new NegocioException("Erro: O nome do serviço deve ter ao menos 3 caracteres.");
         }
 
-        public List<TipoServico> listarTodos() throws SQLException {
-            return dao.listarTodos();
+        if (nome.matches(".*\\d.*")) {
+            throw new NegocioException("Erro: O nome do serviço não pode conter números.");
+        }
+    }
+
+    private void validarDuracaoMinutos(int duracao) throws NegocioException {
+        if (duracao < 5) {
+            throw new NegocioException("Erro: A duração do serviço deve ser de no mínimo 5 minutos.");
+        }
+    }
+
+    private Especialidade buscarEspecialidade(Especialidade especialidade) throws SQLException, NegocioException {
+        if (especialidade == null || especialidade.getId() <= 0) {
+            throw new NegocioException("Erro: O serviço deve ser vinculado a uma especialidade válida.");
         }
 
-        public TipoServico buscarPorId(int id) throws SQLException, NegocioException {
-            if (id <= 0) {
-                throw new NegocioException("Tipo do Serviço deve ter um ID válido.");
-            }
-            return dao.buscarPorId(id);
-        }
+        Especialidade especialidadeExistente = this.especialidadeDAO.buscarPorId(especialidade.getId());
 
-        //MÉTODOS AUXILIARES
-        private void ValidarCamposObrigatorios(TipoServico servico) throws SQLException, NegocioException {
-            ValidarNome(servico.getNome());
-            ValidarDuracaoMinutos(servico.getDuracaoMinutos());
-            BuscarEspecialidade(servico.getEspecialidadeNecessaria());
+        if (especialidadeExistente == null) {
+            throw new NegocioException(
+                    "Erro: A especialidade com o ID [" + especialidade.getId()
+                            + "] não foi encontrada. Cadastre a especialidade primeiro.");
         }
+        return especialidadeExistente;
+    }
 
-        private void ValidarNome(String nomePaciente) throws NegocioException{
-            if (nomePaciente == null || nomePaciente.trim().length() < 3) {
-                throw new NegocioException("O nome do serviço é obrigatório e deve ter ao menos 3 caracteres.");
-            }
+    private void validarUnicidade(TipoServico servico) throws NegocioException, SQLException {
+        TipoServico existente = dao.buscarPorNomeEEspecialidadeIgnoreCase(
+                servico.getNome(),
+                servico.getEspecialidadeNecessaria().getId());
+
+        if (existente != null) {
+            throw new NegocioException(
+                    "Erro: Já existe um serviço com este nome para a especialidade "
+                            + servico.getEspecialidadeNecessaria().getNome() + ".");
         }
-
-        private void ValidarDuracaoMinutos(int duracao) throws NegocioException{
-            if (duracao < 5) {
-                throw new NegocioException("A duração do serviço deve ser de no mínimo 5 minutos.");
-            }
-        }
-
-        private Especialidade BuscarEspecialidade(Especialidade especialidade) throws SQLException, NegocioException{
-            try {
-                if (especialidade == null || especialidade.getId() <= 0) {
-                    throw new NegocioException("O serviço deve ser vinculado a uma Especialidade válida.");
-                }
-                Especialidade especialidadeExistente = this.especialidadeDAO.buscarPorId(especialidade.getId());
-
-                if (especialidadeExistente == null) {
-                    throw new NegocioException("A Especialidade com o ID [" + especialidade.getId() + "] não foi encontrada no catálogo. Cadastre a especialidade primeiro.");
-                }
-                return especialidadeExistente;    
-            } catch (SQLException e) {
-                throw new SQLException("Erro ao buscar a especialidade no sistema");
-            } 
-        }
+    }
 }

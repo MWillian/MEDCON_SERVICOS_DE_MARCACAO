@@ -1,4 +1,5 @@
 package br.com.medcon.dao;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +12,7 @@ import br.com.medcon.vo.TipoServico;
 
 public class TipoServicoDAO implements IDAO<TipoServico> {
     private final ConexaoFactory factory;
+
     public TipoServicoDAO() {
         this.factory = new ConexaoFactory();
     }
@@ -52,26 +54,25 @@ public class TipoServicoDAO implements IDAO<TipoServico> {
 
     @Override
     public TipoServico buscarPorId(int id) throws SQLException {
-        String sql = 
-        "SELECT " +
-        " tb_tipo_servico.id, " +
-        " tb_tipo_servico.nome, " +
-        " tb_tipo_servico.duracao_media_minutos, " +
-        " tb_tipo_servico.id_especialidade_necessaria, " +
-        " tb_especialidade.id AS especialidade_id, " +
-        " tb_especialidade.nome AS especialidade_nome, " +
-        " tb_especialidade.descricao AS especialidade_descricao " +
-        "FROM tb_tipo_servico " +
-        "INNER JOIN tb_especialidade " +
-        "ON tb_tipo_servico.id_especialidade_necessaria = tb_especialidade.id " +
-        "WHERE tb_tipo_servico.id = ?;";
+        String sql = "SELECT "
+                + " tb_tipo_servico.id, "
+                + " tb_tipo_servico.nome, "
+                + " tb_tipo_servico.duracao_media_minutos, "
+                + " tb_tipo_servico.id_especialidade_necessaria, "
+                + " tb_especialidade.id AS especialidade_id, "
+                + " tb_especialidade.nome AS especialidade_nome, "
+                + " tb_especialidade.descricao AS especialidade_descricao "
+                + "FROM tb_tipo_servico "
+                + "INNER JOIN tb_especialidade "
+                + "ON tb_tipo_servico.id_especialidade_necessaria = tb_especialidade.id "
+                + "WHERE tb_tipo_servico.id = ?;";
         TipoServico tipoServico = null;
         Especialidade especialidade;
         try (Connection conn = factory.getConexao();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             try (ResultSet result = stmt.executeQuery()) {
-                if(result.next()) {
+                if (result.next()) {
                     especialidade = montarEspecialidade(result);
                     tipoServico = montarTipoServico(result, especialidade);
                 }
@@ -83,18 +84,17 @@ public class TipoServicoDAO implements IDAO<TipoServico> {
     @Override
     public List<TipoServico> listarTodos() throws SQLException {
         List<TipoServico> lista = new ArrayList<>();
-        String sql = 
-        "SELECT " +
-        " tb_tipo_servico.id, " +
-        " tb_tipo_servico.nome, " +
-        " tb_tipo_servico.duracao_media_minutos, " +
-        " tb_tipo_servico.id_especialidade_necessaria, " +
-        " tb_especialidade.id AS especialidade_id, " +
-        " tb_especialidade.nome AS especialidade_nome, " +
-        " tb_especialidade.descricao AS especialidade_descricao " +
-        "FROM tb_tipo_servico " +
-        "INNER JOIN tb_especialidade " +
-        "ON tb_tipo_servico.id_especialidade_necessaria = tb_especialidade.id;";
+        String sql = "SELECT "
+                + " tb_tipo_servico.id, "
+                + " tb_tipo_servico.nome, "
+                + " tb_tipo_servico.duracao_media_minutos, "
+                + " tb_tipo_servico.id_especialidade_necessaria, "
+                + " tb_especialidade.id AS especialidade_id, "
+                + " tb_especialidade.nome AS especialidade_nome, "
+                + " tb_especialidade.descricao AS especialidade_descricao "
+                + "FROM tb_tipo_servico "
+                + "INNER JOIN tb_especialidade "
+                + "ON tb_tipo_servico.id_especialidade_necessaria = tb_especialidade.id;";
         try (Connection conn = factory.getConexao();
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 ResultSet result = stmt.executeQuery()) {
@@ -105,20 +105,50 @@ public class TipoServicoDAO implements IDAO<TipoServico> {
         return lista;
     }
 
-    private TipoServico montarTipoServico(ResultSet result, Especialidade especialidade) throws SQLException{
+    public TipoServico buscarPorNomeEEspecialidadeIgnoreCase(String nome, int idEspecialidade) throws SQLException {
+        String sql = "SELECT "
+                + " tb_tipo_servico.id, "
+                + " tb_tipo_servico.nome, "
+                + " tb_tipo_servico.duracao_media_minutos, "
+                + " tb_tipo_servico.id_especialidade_necessaria, "
+                + " tb_especialidade.id AS especialidade_id, "
+                + " tb_especialidade.nome AS especialidade_nome, "
+                + " tb_especialidade.descricao AS especialidade_descricao "
+                + "FROM tb_tipo_servico "
+                + "INNER JOIN tb_especialidade "
+                + "ON tb_tipo_servico.id_especialidade_necessaria = tb_especialidade.id "
+                + "WHERE LOWER(tb_tipo_servico.nome) = LOWER(?) "
+                + "AND tb_tipo_servico.id_especialidade_necessaria = ?;";
+
+        TipoServico tipoServico = null;
+        try (Connection conn = factory.getConexao();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nome);
+            stmt.setInt(2, idEspecialidade);
+            try (ResultSet result = stmt.executeQuery()) {
+                if (result.next()) {
+                    Especialidade especialidade = montarEspecialidade(result);
+                    tipoServico = montarTipoServico(result, especialidade);
+                }
+            }
+        }
+        return tipoServico;
+    }
+
+    private TipoServico montarTipoServico(ResultSet result, Especialidade especialidade) throws SQLException {
         TipoServico tipoServico = new TipoServico(
-            result.getInt("id"),
-            result.getString("nome"),
-            result.getInt("duracao_media_minutos"),
-            especialidade);
+                result.getInt("id"),
+                result.getString("nome"),
+                result.getInt("duracao_media_minutos"),
+                especialidade);
         return tipoServico;
     }
 
     private Especialidade montarEspecialidade(ResultSet result) throws SQLException {
         Especialidade especialidade = new Especialidade(
-            result.getInt("especialidade_id"),
-            result.getString("especialidade_nome"),
-            result.getString("especialidade_descricao"));
+                result.getInt("especialidade_id"),
+                result.getString("especialidade_nome"),
+                result.getString("especialidade_descricao"));
         return especialidade;
     }
 }
