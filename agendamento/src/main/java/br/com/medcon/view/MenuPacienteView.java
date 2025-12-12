@@ -156,6 +156,42 @@ public class MenuPacienteView {
         }
     }
 
+    private LocalTime escolherHorario(Disponibilidade disp, LocalDate data, int duracaoMinutos) {
+        System.out.println("\n=== ESCOLHA O HORÁRIO ===");
+        try {
+            List<LocalTime> horariosLivres = agendamentoBO.calcularHorariosLivres(disp, data, duracaoMinutos);
+
+            if (horariosLivres.isEmpty()) {
+                System.out.println("Agenda cheia para este dia.");
+                return null;
+            }
+
+            for (int i = 0; i < horariosLivres.size(); i++) {
+                System.out.printf("[%d] - %s\n", (i + 1), horariosLivres.get(i));
+            }
+            
+            System.out.println("[0] - Voltar");
+            System.out.print("> Escolha o número do horário: ");
+            String entrada = scanner.nextLine();
+            
+            if (entrada.equals("0")) return null;
+            
+            int escolha = Integer.parseInt(entrada);
+            
+            if (escolha > 0 && escolha <= horariosLivres.size()) {
+                return horariosLivres.get(escolha - 1); 
+            } else {
+                System.out.println("Opção inválida.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro ao calcular horários: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("Digite apenas números.");
+        }
+        return null;
+    }
+
     private void novaSolicitacao() throws NegocioException {
         System.out.println("\n=== NOVO AGENDAMENTO: SELECIONE O SERVIÇO ===");
         try {
@@ -193,39 +229,41 @@ public class MenuPacienteView {
 
             Disponibilidade disponibilidade = escolherDisponibilidade(esp);
 
-            if (disponibilidade != null) {
-                LocalDate dataAgendamento = calcularProximaData(disponibilidade.getDiaSemana());
-                LocalTime horaInicio = disponibilidade.getHoraInicio();
-                LocalDateTime dataHoraInicio = LocalDateTime.of(dataAgendamento, horaInicio);
+           if (disponibilidade != null) {
+            LocalDate dataAgendamento = calcularProximaData(disponibilidade.getDiaSemana());
+            System.out.println("Data sugerida: " + dataAgendamento.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 
-                System.out.println("\n=== CONFIRMAÇÃO ===");
-                System.out.println("Serviço: " + servicoSelecionado.getNome());
-                System.out.println("Profissional: " + disponibilidade.getProfissional().getNome());
-                System.out.println("Local: " + disponibilidade.getPosto().getNome());
-                System.out.println("Data: " + dataHoraInicio.format(
-                        DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+            LocalTime horaEscolhida = escolherHorario(disponibilidade, dataAgendamento, servicoSelecionado.getDuracaoMinutos());
+            
+            if (horaEscolhida == null) return;
 
-                System.out.print("Confirmar? (S/N): ");
-                String confirmacao = scanner.nextLine().trim().toUpperCase();
+            LocalDateTime dataHoraInicio = LocalDateTime.of(dataAgendamento, horaEscolhida);
 
-                if (confirmacao.equals("S")) {
-                    Agendamento ag = new Agendamento();
-                    ag.setPaciente(pacienteLogado);
-                    ag.setPosto(disponibilidade.getPosto());
-                    ag.setProfissional(disponibilidade.getProfissional());
-                    ag.setDataHoraInicio(dataHoraInicio);
-                    ag.setStatus(StatusAgendamento.AGENDADA);
-                    ag.setLaudo("Aguardando atendimento");
+            System.out.println("\n=== CONFIRMAÇÃO ===");
+            System.out.println("Serviço: " + servicoSelecionado.getNome());
+            System.out.println("Profissional: " + disponibilidade.getProfissional().getNome());
+            System.out.println("Local: " + disponibilidade.getPosto().getNome());
+            System.out.println("Data: " + dataHoraInicio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
 
-                    agendamentoBO.salvar(ag, servicoSelecionado.getDuracaoMinutos());
-                    disponibilidadeBO.deletar(disponibilidade.getId());
-                    System.out.println("Agendamento realizado com sucesso!");
-                } else if (confirmacao.equals("N")) {
-                    System.out.println("Operação cancelada.");
-                } else {
-                    System.out.println("Opção inválida. Operação cancelada.");
-                }
+            System.out.print("Confirmar? (S/N): ");
+            String confirmacao = scanner.nextLine().trim().toUpperCase();
+
+            if (confirmacao.equals("S")) {
+                Agendamento ag = new Agendamento();
+                ag.setPaciente(pacienteLogado);
+                ag.setPosto(disponibilidade.getPosto());
+                ag.setProfissional(disponibilidade.getProfissional());
+                ag.setDataHoraInicio(dataHoraInicio);
+                ag.setStatus(StatusAgendamento.AGENDADA);
+                ag.setLaudo("Aguardando atendimento");
+
+                agendamentoBO.salvar(ag, servicoSelecionado.getDuracaoMinutos());
+
+                System.out.println("Agendamento realizado com sucesso!");
+            } else {
+                System.out.println("Operação cancelada.");
             }
+        }
         } catch (NumberFormatException e) {
             System.out.println("Erro de digitação: Por favor, digite um ID válido.");
         } catch (SQLException e) {
