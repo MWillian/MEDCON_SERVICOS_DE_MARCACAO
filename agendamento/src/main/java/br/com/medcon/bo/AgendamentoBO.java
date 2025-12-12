@@ -18,35 +18,22 @@ public class AgendamentoBO {
     public AgendamentoBO(AgendamentoDAO agendamentoDAO) {
         this.agendamentoDAO = agendamentoDAO;
     }
+    
+    public void salvar(Agendamento agendamento, int duracaoMinutos) throws NegocioException, SQLException {
+        validarCamposObrigatorios(agendamento, duracaoMinutos);
+        validarDataNoFuturo(agendamento.getDataHoraInicio());
 
-   public void salvar(Agendamento agendamento, int duracaoMinutos) throws NegocioException, SQLException {
-        if (agendamento.getPaciente() == null || agendamento.getProfissional() == null || agendamento.getPosto() == null) {
-            throw new NegocioException("Dados incompletos. Paciente, Profissional e Posto são obrigatórios.");
-        }
-        if (agendamento.getDataHoraInicio() == null) {
-            throw new NegocioException("A data e hora do agendamento são obrigatórias.");
-        }
-        if (duracaoMinutos <= 0) {
-            throw new NegocioException("Duração do serviço inválida.");
-        }
+        LocalDateTime dataHoraInicio = agendamento.getDataHoraInicio();
+        LocalDateTime dataHoraFim = dataHoraInicio.plusMinutes(duracaoMinutos);
+        agendamento.setDataHoraFim(dataHoraFim);
 
-        LocalDateTime inicio = agendamento.getDataHoraInicio();
-        LocalDateTime fimCalculado = inicio.plusMinutes(duracaoMinutos);
-        agendamento.setDataHoraFim(fimCalculado);
+        validarConflitoHorario(agendamento.getProfissional().getId(), dataHoraInicio, dataHoraFim);
 
-        boolean temConflito = agendamentoDAO.existeConflitoHorario(
-                agendamento.getProfissional().getId(),
-                inicio, 
-                fimCalculado
-        );
-
-        if (temConflito) {
-            throw new NegocioException("Horário indisponível! O profissional já possui agendamento neste intervalo.");
-        }
         agendamentoDAO.salvar(agendamento);
     }
 
-    public List<LocalTime> calcularHorariosLivres(Disponibilidade disp, LocalDate dataAlvo, int duracaoMinutos) throws SQLException {
+    public List<LocalTime> calcularHorariosLivres(Disponibilidade disp, LocalDate dataAlvo, int duracaoMinutos)
+            throws SQLException {
         List<LocalTime> horariosLivres = new ArrayList<>();
 
         if (dataAlvo.getDayOfWeek() != disp.getDiaSemana()) {
@@ -56,16 +43,16 @@ public class AgendamentoBO {
         LocalTime cursor = disp.getHoraInicio();
         LocalTime fimExpediente = disp.getHoraFim();
 
-        while (cursor.plusMinutes(duracaoMinutos).isBefore(fimExpediente) || cursor.plusMinutes(duracaoMinutos).equals(fimExpediente)) {
-            
+        while (cursor.plusMinutes(duracaoMinutos).isBefore(fimExpediente)
+                || cursor.plusMinutes(duracaoMinutos).equals(fimExpediente)) {
+
             LocalDateTime slotInicio = LocalDateTime.of(dataAlvo, cursor);
             LocalDateTime slotFim = slotInicio.plusMinutes(duracaoMinutos);
 
             boolean ocupado = agendamentoDAO.existeConflitoHorario(
-                disp.getProfissional().getId(),
-                slotInicio, 
-                slotFim
-            );
+                    disp.getProfissional().getId(),
+                    slotInicio,
+                    slotFim);
 
             if (!ocupado) {
                 horariosLivres.add(cursor);
@@ -85,19 +72,50 @@ public class AgendamentoBO {
         Agendamento agendamento = agendamentoDAO.buscarPorId(id);
 
         if (agendamento == null) {
-            throw new NegocioException("Agendamento com ID " + id + " não encontrado.");
+            throw new NegocioException("Erro: Agendamento com ID " + id + " não encontrado.");
         }
 
         return agendamento;
     }
 
-    public List<Agendamento> buscarAgendamentosPorPaciente(int idPaciente) throws NegocioException, SQLException {
-        List<Agendamento> agendamento = agendamentoDAO.buscarAgendamentosPorPaciente(idPaciente);
+    public List<Agendamento> buscarAgendamentosPorPaciente(int idPaciente) throws SQLException {
+        return agendamentoDAO.buscarAgendamentosPorPaciente(idPaciente);
+    }
 
-        if (agendamento.size() == 0) {
-            throw new NegocioException("Nenhum Agendamento encontrado.");
+    private void validarCamposObrigatorios(Agendamento agendamento, int duracaoMinutos) throws NegocioException {
+        if (agendamento.getPaciente() == null || agendamento.getPaciente().getId() <= 0) {
+            throw new NegocioException("Erro: Paciente é obrigatório.");
         }
 
-        return agendamento;
+        if (agendamento.getProfissional() == null || agendamento.getProfissional().getId() <= 0) {
+            throw new NegocioException("Erro: Profissional é obrigatório.");
+        }
+
+        if (agendamento.getPosto() == null || agendamento.getPosto().getId() <= 0) {
+            throw new NegocioException("Erro: Posto de saúde é obrigatório.");
+        }
+
+        if (agendamento.getDataHoraInicio() == null) {
+            throw new NegocioException("Erro: A data e hora do agendamento são obrigatórias.");
+        }
+
+        if (duracaoMinutos <= 0) {
+            throw new NegocioException("Erro: Duração do serviço inválida.");
+        }
+    }
+
+    private void validarDataNoFuturo(LocalDateTime dataHora) throws NegocioException {
+        if (dataHora.isBefore(LocalDateTime.now())) {
+            throw new NegocioException("Erro: Não é possível agendar para uma data/hora no passado.");
+        }
+    }
+
+    private void validarConflitoHorario(int idProfissional, LocalDateTime inicio, LocalDateTime fim)
+            throws NegocioException, SQLException {
+        boolean temConflito = agendamentoDAO.existeConflitoHorario(idProfissional, inicio, fim);
+
+        if (temConflito) {
+            throw new NegocioException("Erro: Horário indisponível! O profissional já possui agendamento neste intervalo.");
+        }
     }
 }

@@ -1,9 +1,11 @@
 package br.com.medcon.dao;
+
 import br.com.medcon.enums.CargoProfissional;
 import br.com.medcon.vo.Especialidade;
 import br.com.medcon.vo.PostoSaude;
 import br.com.medcon.vo.ProfissionalPosto;
 import br.com.medcon.vo.ProfissionalSaude;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,15 +15,17 @@ import java.util.List;
 
 public class ProfissionalPostoDAO {
     private final ConexaoFactory factory;
+
     public ProfissionalPostoDAO() {
         this.factory = new ConexaoFactory();
     }
+
     public void vincular(int idProfissional, int idPosto) throws SQLException {
         String sql = "INSERT INTO tb_profissional_posto (id_profissional, id_posto) VALUES (?, ?)";
         try (Connection conn = factory.getConexao();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setLong(1, idProfissional);
-            stmt.setLong(2, idPosto);
+            stmt.setInt(1, idProfissional);
+            stmt.setInt(2, idPosto);
             stmt.execute();
         }
     }
@@ -30,11 +34,27 @@ public class ProfissionalPostoDAO {
         String sql = "DELETE FROM tb_profissional_posto WHERE id_profissional = ? AND id_posto = ?";
         try (Connection conn = factory.getConexao();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setLong(1, idProfissional);
-            stmt.setLong(2, idPosto);
+            stmt.setInt(1, idProfissional);
+            stmt.setInt(2, idPosto);
             stmt.execute();
         }
     }
+
+    public boolean verificarVinculoExistente(int idProfissional, int idPosto) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM tb_profissional_posto WHERE id_profissional = ? AND id_posto = ?";
+        try (Connection conn = factory.getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idProfissional);
+            stmt.setInt(2, idPosto);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
     public List<PostoSaude> listarPostosDoProfissional(int idProfissional) throws SQLException {
         String sql = "SELECT p.* FROM tb_posto p " +
                      "JOIN tb_profissional_posto pp ON p.id = pp.id_posto " +
@@ -77,21 +97,25 @@ public class ProfissionalPostoDAO {
              ResultSet result = stmt.executeQuery()) {
             while (result.next()) {
                 ProfissionalPosto pp = new ProfissionalPosto();
+
                 ProfissionalSaude prof = new ProfissionalSaude();
                 prof.setId(result.getInt("id_profissional"));
                 prof.setNome(result.getString("nome_prof"));
                 prof.setCpf(result.getString("cpf"));
                 prof.setRegistroProfissional(result.getString("registro_profissional"));
                 prof.setTipo(CargoProfissional.valueOf(result.getString("tipo_profissional")));
+
                 Especialidade esp = new Especialidade();
                 esp.setId(result.getInt("id_esp"));
                 esp.setNome(result.getString("nome_esp"));
                 prof.setEspecialidade(esp);
+
                 PostoSaude posto = new PostoSaude();
                 posto.setId(result.getInt("pid"));
                 posto.setNome(result.getString("nome_posto"));
                 posto.setEndereco(result.getString("endereco"));
                 posto.setTelefone(result.getString("telefone"));
+
                 pp.setProfissional(prof);
                 pp.setPosto(posto);
                 lista.add(pp);
