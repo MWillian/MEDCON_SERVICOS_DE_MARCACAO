@@ -22,6 +22,10 @@ public class DisponibilidadeBO {
         disponibilidadeDAO.salvar(disponibilidade);
     }
 
+    public void deletar(int id) throws SQLException {
+        disponibilidadeDAO.deletar(id);
+    }
+
     public List<Disponibilidade> buscarTodos() throws SQLException {
         return disponibilidadeDAO.buscarTodos();
     }
