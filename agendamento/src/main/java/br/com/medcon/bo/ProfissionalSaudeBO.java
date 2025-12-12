@@ -20,12 +20,7 @@ public class ProfissionalSaudeBO {
     }
 
     public void salvar(ProfissionalSaude profissional) throws NegocioException, SQLException {
-        validarCamposObrigatorios(profissional);
-        validarRegistro(profissional);
         validarEspecialidade(profissional);
-        validarUnicidadeCpf(profissional);
-        validarUnicidadeRegistro(profissional);
-
         try {
             int idPessoaExistente = dao.buscarIdPessoaPorCpf(profissional.getCpf());
 
@@ -57,20 +52,12 @@ public class ProfissionalSaudeBO {
         return p;
     }
 
-    private void validarCamposObrigatorios(ProfissionalSaude profissional) throws NegocioException {
-        if (profissional.getNome() == null || profissional.getNome().trim().isEmpty()) {
-            throw new NegocioException("Erro: O nome do profissional é obrigatório.");
-        }
-
-        if (profissional.getNome().trim().length() < 3) {
-            throw new NegocioException("Erro: O nome do profissional deve ter ao menos 3 caracteres.");
-        }
-
-        if (profissional.getCpf() == null || profissional.getCpf().trim().isEmpty()) {
+    public void ValidarCpf(String cpf) throws NegocioException{
+        if((cpf) == null || cpf.trim().isEmpty()) {
             throw new NegocioException("Erro: O CPF é obrigatório.");
         }
 
-        String cpfLimpo = profissional.getCpf().replaceAll("[^0-9]", "");
+        String cpfLimpo = cpf.replaceAll("[^0-9]", "");
 
         if (cpfLimpo.length() != 11) {
             throw new NegocioException("Erro: O CPF deve ter exatamente 11 dígitos.");
@@ -81,13 +68,45 @@ public class ProfissionalSaudeBO {
         }
     }
 
-    private void validarRegistro(ProfissionalSaude profissional) throws NegocioException {
-        if (profissional.getRegistroProfissional() == null
-                || profissional.getRegistroProfissional().trim().isEmpty()) {
+    public void ValidarNome(String nome)throws NegocioException{
+         if (nome == null || nome.trim().isEmpty()) {
+            throw new NegocioException("Erro: O nome do profissional é obrigatório.");
+        }
+
+        if (nome.trim().length() < 3) {
+            throw new NegocioException("Erro: O nome do profissional deve ter ao menos 3 caracteres.");
+        }
+    }
+
+    public void ValidarTelefone(String telefone) throws NegocioException {
+        String foneLimpo = limparNumero(telefone);
+        
+        if (foneLimpo.isEmpty()) {
+            throw new NegocioException("Erro: O telefone é obrigatório.");
+        }
+
+        if (foneLimpo.length() < 10 || foneLimpo.length() > 11) {
+            throw new NegocioException("Erro: Telefone inválido. Deve conter DDD + número (10 ou 11 dígitos).");
+        }
+    }
+
+     public void ValidarEndereco(String endereco) throws NegocioException {
+        if (endereco == null || endereco.trim().isEmpty()) {
+            throw new NegocioException("Erro: O endereço é obrigatório.");
+        }
+
+        if (endereco.trim().length() < 10) {
+            throw new NegocioException("Erro: O endereço deve ter ao menos 10 caracteres.");
+        }
+    }
+
+    public void ValidarRegistro(String registro) throws NegocioException {
+        if (registro == null
+                || registro.trim().isEmpty()) {
             throw new NegocioException("Erro: O registro profissional (CRM/COREN/etc.) é obrigatório.");
         }
 
-        if (profissional.getRegistroProfissional().trim().length() < 4) {
+        if (registro.trim().length() < 4) {
             throw new NegocioException("Erro: O registro profissional deve ter ao menos 4 caracteres.");
         }
     }
@@ -103,17 +122,22 @@ public class ProfissionalSaudeBO {
         }
     }
 
-    private void validarUnicidadeCpf(ProfissionalSaude profissional) throws NegocioException, SQLException {
-        ProfissionalSaude existente = dao.buscarPorCpf(profissional.getCpf());
+    public void validarUnicidadeCpf(String cpf) throws NegocioException, SQLException {
+        ProfissionalSaude existente = dao.buscarPorCpf(cpf);
         if (existente != null) {
             throw new NegocioException("Erro: Este CPF já está cadastrado como profissional de saúde.");
         }
     }
 
-    private void validarUnicidadeRegistro(ProfissionalSaude profissional) throws NegocioException, SQLException {
-        ProfissionalSaude existente = dao.buscarPorRegistroProfissional(profissional.getRegistroProfissional());
+    public void validarUnicidadeRegistro(String registro) throws NegocioException, SQLException {
+        ProfissionalSaude existente = dao.buscarPorRegistroProfissional(registro);
         if (existente != null) {
             throw new NegocioException("Erro: Este registro profissional já está cadastrado.");
         }
+    }
+
+     public String limparNumero(String texto) {
+        if (texto == null) return "";
+        return texto.replaceAll("\\D", "");
     }
 }

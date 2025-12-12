@@ -1,12 +1,13 @@
 package br.com.medcon.dao;
 
-import br.com.medcon.interfaces.IDAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import br.com.medcon.interfaces.IDAO;
 import br.com.medcon.vo.PostoSaude;
 
 public class PostoSaudeDAO implements IDAO<PostoSaude> {
@@ -85,8 +86,8 @@ public class PostoSaudeDAO implements IDAO<PostoSaude> {
             throws SQLException {
         String sql = "SELECT * FROM tb_posto "
                 + "WHERE LOWER(nome) = LOWER(?) "
-                + "AND LOWER(endereco) = LOWER(?) "
-                + "AND telefone = ?";
+                + "OR LOWER(endereco) = LOWER(?) "
+                + "OR telefone = ?";
 
         PostoSaude posto = null;
         try (Connection conn = factory.getConexao();
