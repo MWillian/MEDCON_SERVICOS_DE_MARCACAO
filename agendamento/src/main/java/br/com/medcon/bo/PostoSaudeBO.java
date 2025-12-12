@@ -48,8 +48,8 @@ public class PostoSaudeBO {
             throw new NegocioException("Erro: O nome do posto deve ter ao menos 5 caracteres.");
         }
 
-        if (nome.matches("^\\d+$")) {
-            throw new NegocioException("Erro: O nome do posto não pode ser composto apenas por números.");
+        if (nome.matches(".*\\d.*")) {
+            throw new NegocioException("Erro: O nome do posto não pode conter números.");
         }
     }
 
@@ -60,10 +60,6 @@ public class PostoSaudeBO {
 
         if (endereco.trim().length() < 10) {
             throw new NegocioException("Erro: O endereço do posto deve ter ao menos 10 caracteres.");
-        }
-
-        if (endereco.matches("^\\d+$")) {
-            throw new NegocioException("Erro: O endereço do posto não pode ser composto apenas por números.");
         }
     }
 
