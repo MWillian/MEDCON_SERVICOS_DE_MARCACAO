@@ -39,7 +39,6 @@ public class PacienteBO {
     public Paciente buscarPorCpf(String cpf) throws SQLException, NegocioException {
         String cpfLimpo = limparNumero(cpf);
 
-        // Valida formato antes de buscar no banco
         if (cpfLimpo.length() != 11) {
             throw new NegocioException("Erro: CPF inválido. O CPF deve conter exatamente 11 dígitos numéricos.");
         }
@@ -152,7 +151,6 @@ public class PacienteBO {
     }
 
     private void validarUnicidade(Paciente p) throws NegocioException, SQLException {
-        // Verifica se já existe um PACIENTE com este CPF
         Paciente existente = dao.buscarPorCpf(p.getCpf());
         if (existente != null) {
             throw new NegocioException("Erro: Já existe um paciente cadastrado com o CPF informado.");
