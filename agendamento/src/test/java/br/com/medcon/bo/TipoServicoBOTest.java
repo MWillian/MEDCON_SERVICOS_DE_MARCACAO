@@ -1,19 +1,21 @@
 package br.com.medcon.bo;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
+import static org.mockito.ArgumentMatchers.any;
+import org.mockito.Mockito;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import br.com.medcon.bo.exception.NegocioException;
 import br.com.medcon.dao.EspecialidadeDAO;
 import br.com.medcon.dao.TipoServicoDAO;
 import br.com.medcon.vo.Especialidade;
 import br.com.medcon.vo.TipoServico;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-
-import java.sql.SQLException;
-
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
 public class TipoServicoBOTest {
 
@@ -71,4 +73,5 @@ public class TipoServicoBOTest {
 
         verify(daoMock, never()).salvar(any(TipoServico.class));
     }
+}
 

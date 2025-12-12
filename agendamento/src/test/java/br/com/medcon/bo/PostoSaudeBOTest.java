@@ -1,18 +1,17 @@
 package br.com.medcon.bo;
 
-import static org.mockito.Mockito.*;
-
-import java.sql.SQLException;
-
-import br.com.medcon.bo.exception.NegocioException;
-import br.com.medcon.dao.PostoSaudeDAO;
-import br.com.medcon.vo.PostoSaude;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import br.com.medcon.bo.exception.NegocioException;
+import br.com.medcon.dao.PostoSaudeDAO;
+import br.com.medcon.vo.PostoSaude;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PostoSaudeBOTest {

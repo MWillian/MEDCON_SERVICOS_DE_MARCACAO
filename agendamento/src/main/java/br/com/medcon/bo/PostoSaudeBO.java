@@ -81,13 +81,38 @@ public class PostoSaudeBO {
 
     private void validarUnicidade(PostoSaude posto) throws NegocioException, SQLException {
         PostoSaude existente = dao.buscarPorNomeEnderecoTelefoneIgnoreCase(
-                posto.getNome(),
-                posto.getEndereco(),
-                posto.getTelefone());
+            posto.getNome(), 
+            posto.getEndereco(), 
+            posto.getTelefone()
+     );
 
-        if (existente != null) {
-            throw new NegocioException(
-                    "Erro: Já existe um posto cadastrado com este nome, endereço e telefone.");
+      if (existente != null) {
+        
+        StringBuilder msgErro = new StringBuilder("Erro: Já existe um posto cadastrado com ");
+        boolean conflitoEncontrado = false;
+
+        if (existente.getNome().equalsIgnoreCase(posto.getNome())) {
+            msgErro.append("este Nome");
+            conflitoEncontrado = true;
         }
+        
+        if (existente.getTelefone().equals(posto.getTelefone())) {
+            if (conflitoEncontrado) msgErro.append(", ");
+            msgErro.append("este Telefone");
+            conflitoEncontrado = true;
+        }
+
+        if (existente.getEndereco().equalsIgnoreCase(posto.getEndereco())) {
+            if (conflitoEncontrado) msgErro.append(" ou ");
+            msgErro.append("este Endereço");
+        }
+
+        msgErro.append(".");
+        
+        if (!conflitoEncontrado) {
+             throw new NegocioException("Erro: Dados informados (Nome, Endereço ou Telefone) já pertencem a outro Posto.");
+        }
+        throw new NegocioException(msgErro.toString());
+    }
     }
 }

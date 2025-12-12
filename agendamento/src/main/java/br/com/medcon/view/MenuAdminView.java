@@ -172,8 +172,10 @@ public class MenuAdminView {
         } else if (op.equals("2")) {
             System.out.print("Nome: ");
             String nome = scanner.nextLine();
+
             System.out.print("Endereço: ");
             String end = scanner.nextLine();
+
             System.out.print("Telefone: ");
             String tel = scanner.nextLine();
 
@@ -200,10 +202,15 @@ public class MenuAdminView {
                 ProfissionalSaude p = new ProfissionalSaude();
 
                 System.out.print("Nome: ");
-                p.setNome(scanner.nextLine());
+                String nome = scanner.nextLine();
+                profissionalSaudeBO.ValidarNome(nome);
+                p.setNome(nome);
 
                 System.out.print("CPF: ");
-                p.setCpf(scanner.nextLine());
+                String cpf = scanner.nextLine();
+                profissionalSaudeBO.ValidarCpf(cpf);
+                profissionalSaudeBO.validarUnicidadeCpf(cpf);
+                p.setCpf(cpf);
 
                 System.out.println("Data de Nascimento (dd/MM/yyyy): ");
                 String dataTexto = scanner.nextLine();
@@ -218,13 +225,20 @@ public class MenuAdminView {
                 }
 
                 System.out.print("Registro Profissional: ");
-                p.setRegistroProfissional(scanner.nextLine());
+                String registro = scanner.nextLine();
+                profissionalSaudeBO.ValidarRegistro(registro);
+                profissionalSaudeBO.validarUnicidadeRegistro(registro);
+                p.setRegistroProfissional(registro);
 
                 System.out.print("Telefone: ");
-                p.setTelefone(scanner.nextLine());
+                String telefone = scanner.nextLine();
+                profissionalSaudeBO.ValidarTelefone(telefone);
+                p.setTelefone(telefone);
 
                 System.out.print("Endereço: ");
-                p.setEndereco(scanner.nextLine());
+                String end = scanner.nextLine();
+                profissionalSaudeBO.ValidarEndereco(end);
+                p.setEndereco(end);
 
                 System.out.println("Cargo (1-MEDICO, 2-ENFERMEIRO, 3-TECNICO): ");
                 int cargo = Integer.parseInt(scanner.nextLine());
