@@ -1,12 +1,13 @@
 package br.com.medcon.bo;
 
+import java.sql.SQLException;
+import java.util.List;
+
+import br.com.medcon.bo.exception.NegocioException;
+import br.com.medcon.dao.EspecialidadeDAO;
 import br.com.medcon.dao.TipoServicoDAO;
 import br.com.medcon.vo.Especialidade;
 import br.com.medcon.vo.TipoServico;
-import java.sql.SQLException;
-import java.util.List;
-import br.com.medcon.bo.exception.NegocioException;
-import br.com.medcon.dao.EspecialidadeDAO;
 
 public class TipoServicoBO {
     private final TipoServicoDAO dao;
@@ -39,12 +40,10 @@ public class TipoServicoBO {
     }
 
     private void validarCamposObrigatorios(TipoServico servico) throws SQLException, NegocioException {
-        validarNome(servico.getNome());
-        validarDuracaoMinutos(servico.getDuracaoMinutos());
         buscarEspecialidade(servico.getEspecialidadeNecessaria());
     }
 
-    private void validarNome(String nome) throws NegocioException {
+    public void validarNome(String nome) throws NegocioException {
         if (nome == null || nome.trim().isEmpty()) {
             throw new NegocioException("Erro: O nome do serviço é obrigatório.");
         }
@@ -58,7 +57,7 @@ public class TipoServicoBO {
         }
     }
 
-    private void validarDuracaoMinutos(int duracao) throws NegocioException {
+    public void validarDuracaoMinutos(int duracao) throws NegocioException {
         if (duracao < 5) {
             throw new NegocioException("Erro: A duração do serviço deve ser de no mínimo 5 minutos.");
         }
@@ -86,8 +85,7 @@ public class TipoServicoBO {
 
         if (existente != null) {
             throw new NegocioException(
-                    "Erro: Já existe um serviço com este nome para a especialidade "
-                            + servico.getEspecialidadeNecessaria().getNome() + ".");
+                    "Erro: Já existe um serviço com este nome para a especialidade.");
         }
     }
 }
