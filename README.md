@@ -15,8 +15,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;[5. PostoSaude](#5-postosaude)  
 &nbsp;&nbsp;&nbsp;&nbsp;[6. TipoServico](#6-tiposervico)  
 &nbsp;&nbsp;&nbsp;&nbsp;[7. Disponibilidade (A Grade Horária)](#7-disponibilidade-a-grade-horária)  
-&nbsp;&nbsp;&nbsp;&nbsp;[8. Solicitação (A Fila de Espera)](#8-solicitação-a-fila-de-espera)  
-&nbsp;&nbsp;&nbsp;&nbsp;[9. Agendamento (O Compromisso Firmado)](#9-agendamento-o-compromisso-firmado)  
+&nbsp;&nbsp;&nbsp;&nbsp;[8. Agendamento (O Compromisso Firmado)](#8-agendamento-o-compromisso-firmado)  
 [Estrutura do Banco de Dados](#estrutura-do-banco-de-dados)  
 [Núcleo de Pessoas (Herança)](#núcleo-de-pessoas-herança)  
 [Dados Clínicos e Infraestrutura](#dados-clínicos-e-infraestrutura)  
@@ -173,17 +172,7 @@ Esta entidade não representa uma consulta marcada, mas sim a "janela de tempo" 
 
     RF7.2 - Validação de Choque de Horário: O sistema não pode permitir que o mesmo profissional tenha duas disponibilidades conflitantes no mesmo horário, mesmo que em postos diferentes (ex: Estar no Posto A e no Posto B na segunda de manhã ao mesmo tempo)
 
-### 8. Solicitação (A Fila de Espera) ###
-
-Aqui reside a lógica de "fazer o pedido". No serviço público, muitas vezes não se agenda direto, entra-se numa fila.
-
-    RF8.1 - Entrada na Fila: O sistema deve permitir que o paciente solicite um Tipo de Serviço (ex: "Preciso de um Cardiologista"). Esse registro entra com status PENDENTE.
-
-    RF8.2 - Priorização: O sistema deve permitir classificar a solicitação com níveis de prioridade (ex: Idosos, Gestantes ou Emergências), para que estes sejam processados antes dos demais na hora do agendamento.
-
-    RF8.3 - Rastreabilidade: O paciente deve conseguir consultar o status da sua solicitação para saber se ainda está na fila (PENDENTE) ou se já foi agendada (AGENDADA).
-
-### 9. Agendamento (O Compromisso Firmado) ###
+### 8. Agendamento (O Compromisso Firmado) ###
 
 É a concretização do atendimento. É o objeto que liga o Paciente, o Médico, o Posto e a Hora exata.
 
@@ -224,11 +213,6 @@ Estas tabelas centralizam os dados demográficos para evitar duplicidade de info
 
 Tabelas que definem "Onde" o atendimento ocorre e "Quem" pode realizá-lo.
 
-`tb_historico_medico`
-
-    - Descrição: Registros clínicos do passado do paciente.
-    - Função: Armazena eventos como alergias, cirurgias prévias e doenças crônicas em formato de lista (1:N). Substitui o antigo campo de texto único para permitir melhor organização.
-
 `tb_especialidade`
 
     - Descrição: Catálogo de qualificações médicas.
@@ -260,12 +244,6 @@ O coração do sistema, controlando a oferta (Disponibilidade) e a demanda (Soli
     - Descrição: A grade horária fixa (Configuração).
 
     - Função: Define quando um profissional está apto a trabalhar em um determinado posto (Dia da Semana + Hora Início + Hora Fim). Não é a consulta em si, mas a "janela de oportunidade".
-
-`tb_solicitacao (Fila de Espera)`
-
-    - Descrição: O pedido inicial do paciente.
-
-    - Função: Registra a intenção do paciente de ser atendido. Entra com status PENDENTE. Serve para gerenciar a fila de espera e prioridades antes de consolidar um horário.
 
 `tb_agendamento (Compromisso Confirmado)`
 
