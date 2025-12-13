@@ -1,5 +1,4 @@
 /.metadata/
-*.db
 *.sqlite
 *.sqlite3
 .idea/
